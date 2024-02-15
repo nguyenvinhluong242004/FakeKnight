@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - skill1
+  - bagItem
+  - lineBag
+  - buttonBagItem
+  - arrow
+  - Enemy
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - Map
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Ground
+    uniqueID: 3142900657
+    locked: 0
+  - name: Terrain
+    uniqueID: 1359277423
+    locked: 0
+  - name: Terrain1
+    uniqueID: 2285103981
+    locked: 0
+  - name: Terrain1_1
+    uniqueID: 987877443
+    locked: 0
+  - name: Terrain1_2
+    uniqueID: 4018625265
+    locked: 0
+  - name: Terrain1_3
+    uniqueID: 2343082561
+    locked: 0
+  - name: Terrain1_3_Nuoc
+    uniqueID: 240755585
+    locked: 0
+  - name: Terrain1_3_Cau
+    uniqueID: 201260175
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Terrain2
+    uniqueID: 205611893
+    locked: 0
+  - name: Terrain3
+    uniqueID: 587945909
+    locked: 0
+  - name: Player
+    uniqueID: 1312263575
+    locked: 0
+  - name: Obj
+    uniqueID: 4247341389
+    locked: 0
+  - name: Terrain1_3_TanCay
+    uniqueID: 2147205825
+    locked: 0
+  - name: Terrain1_3_TanCay1
+    uniqueID: 1147993597
+    locked: 0
+  - name: Terrain1_3_TanCay2
+    uniqueID: 2570867341
+    locked: 0
+  - name: Terrain1_3_TanCay3
+    uniqueID: 2756836029
+    locked: 0
+  - name: Canvas
+    uniqueID: 2913252125
+    locked: 0
