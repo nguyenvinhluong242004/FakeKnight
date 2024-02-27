@@ -10,12 +10,12 @@ using TMPro;
 
 public class LoadDataPlayer : MonoBehaviour
 {
+    [SerializeField] private GameObject photonManager;
     [SerializeField] public DataPlayer dataPlayer;
     [SerializeField] private string namePlayer;
     [SerializeField] private BagContent bagContent;
     [SerializeField] private ObjectManager objectManager;
     [SerializeField] private TMP_Text _name;
-    [SerializeField] private PlayerMove playerMove;
     [SerializeField] public MoneyPlayer moneyPlayer;
     [SerializeField] private LoadingGame loadingGame;
     [SerializeField] private InformationItem informationItem;
@@ -45,17 +45,24 @@ public class LoadDataPlayer : MonoBehaviour
         if (result.Data != null && result.Data.ContainsKey("DataGamePlayer"))
         {
             DataGame dataGame = JsonConvert.DeserializeObject<DataGame>(result.Data["DataGamePlayer"].Value);
-            dataPlayer.setDataGame(dataGame);
+            dataPlayer.setDataGame(dataGame);// Data ở playfab web null
             _name.text = dataPlayer.name;
-            setPlayer();
-            setItemBag();
-            moneyPlayer.setValue();
-            loadingGame.setLoadingGame(true);
-            loadingGame.isDone = true;
+            //Debug.Log(dataGame.equipments[0]);
+            setData();
         }
         else
             Debug.Log("Get Data No Done!");
     }
+    public void setData()
+    {
+        setPlayer();
+        setItemBag();
+        moneyPlayer.setValue();
+        loadingGame.isDone = true;
+        if (loadingGame.isDone && loadingGame.isDonePhoton)
+            loadingGame.setLoadingGame(true);
+        photonManager.SetActive(true);
+    }    
     void OnError(PlayFabError error)
     {
         Debug.Log(error.GenerateErrorReport());
@@ -126,29 +133,15 @@ public class LoadDataPlayer : MonoBehaviour
         dataPlayer.isSound = k;
         SaveDataGamePlayer();
     }
-    void setPlayer()
+    public void setPlayer()
     {
-        if(playerMove)
-        {
-            // set figure
-            Debug.Log(dataPlayer.idPlayer);
-            playerMove.anm.runtimeAnimatorController = objectManager.anmPlayers[dataPlayer.idPlayer];
-            playerMove.number = dataPlayer.idPlayer;
-            playerMove.sprite.sprite = objectManager.imgPlayers[dataPlayer.idPlayer];
-            playerMove.setBoxCollider();
-            objectManager.imgProfile.sprite = objectManager.imgPlayers[dataPlayer.idPlayer];
-            // get Music, Sound Playerr
-            objectManager.isSound = dataPlayer.isSound; 
-            objectManager._sound.isOn = dataPlayer.isSound; 
-            if (dataPlayer.isMusic)
-                objectManager.audio.Play();
-            objectManager._muic.isOn = dataPlayer.isMusic;
-        }
-        else
-        {
-            playerMove = FindObjectOfType<PlayerMove>();
-            setPlayer();
-        }
+        objectManager.imgProfile.sprite = objectManager.imgPlayers[dataPlayer.idPlayer];
+        // get Music, Sound Playerr
+        objectManager.isSound = dataPlayer.isSound; 
+        objectManager._sound.isOn = dataPlayer.isSound; 
+        if (dataPlayer.isMusic)
+            objectManager.audio.Play();
+        objectManager._muic.isOn = dataPlayer.isMusic;
     } 
     public void LogOut()
     {

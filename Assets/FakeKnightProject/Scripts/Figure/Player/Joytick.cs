@@ -5,20 +5,24 @@ using UnityEngine.UI;
 
 public class Joytick : MonoBehaviour
 {
-    [SerializeField] private Transform bgr, joy;
     public bool isTick = false;
+    [SerializeField] private ObjUse objUse;
+    void Start()
+    {
+        objUse = FindObjectOfType<ObjUse>();
+    }
     public void choose(bool sta)
     {
         if (sta)
         {
-            bgr.transform.localScale = new Vector3(1.1f, 1.1f, 1f);
-            joy.transform.localScale = new Vector3(1.1f, 1.1f, 1f);
+            objUse.bgSta.transform.localScale = new Vector3(1.1f, 1.1f, 1f);
+            objUse.sta.transform.localScale = new Vector3(1.1f, 1.1f, 1f);
         }
         else
         {
-            bgr.transform.localScale = new Vector3(1f, 1f, 1f);
-            joy.transform.localScale = new Vector3(1f, 1f, 1f);
-            joy.transform.position = bgr.transform.position;
+            objUse.bgSta.transform.localScale = new Vector3(1f, 1f, 1f);
+            objUse.sta.transform.localScale = new Vector3(1f, 1f, 1f);
+            objUse.sta.transform.position = objUse.bgSta.transform.position;
             isTick = false;
         }
     }
@@ -26,19 +30,19 @@ public class Joytick : MonoBehaviour
     {
         if (i == 2)
         {
-            joy.transform.position += new Vector3(0, 0.5f, 0);
+            objUse.sta.transform.position += new Vector3(0, 0.5f, 0);
         }
         else if (i == 4)
         {
-            joy.transform.position += new Vector3(-0.5f, 0, 0);
+            objUse.sta.transform.position += new Vector3(-0.5f, 0, 0);
         }
         else if (i == 6)
         {
-            joy.transform.position += new Vector3(0.5f, 0, 0);
+            objUse.sta.transform.position += new Vector3(0.5f, 0, 0);
         }
         else
         {
-            joy.transform.position += new Vector3(0, -0.5f, 0);
+            objUse.sta.transform.position += new Vector3(0, -0.5f, 0);
         }
         isTick = true;
     }

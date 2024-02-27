@@ -6,11 +6,10 @@ using TMPro;
 public class PlayerImpact : MonoBehaviour
 {
     [SerializeField] public float blood, energy;
-    [SerializeField] public Blood _blood, _energy;
-    [SerializeField] public TMP_Text bl, ene;
-    // Start is called before the first frame update
+    [SerializeField] private ObjUse objUse;
     void Start()
     {
+        objUse = FindObjectOfType<ObjUse>();
         blood = 100f;
         energy = 100f;
     }
@@ -20,20 +19,20 @@ public class PlayerImpact : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            _blood.setBlood(blood);
-            _energy.setBlood(energy);
+            objUse._blood.setBlood(blood);
+            objUse._energy.setBlood(energy);
         }
     }
     public void setBlood(float k)
     {
         blood -= k;
-        _blood.setBlood(blood);
-        bl.text = $"{blood} / 100";
+        objUse._blood.setBlood(blood);
+        objUse.bl.text = $"{blood} / 100";
     }
     public void setEnergy(float k)
     {
         energy -= k;
-        _energy.setBlood(energy);
-        ene.text = $"{blood} / 100";
+        objUse._energy.setBlood(energy);
+        objUse.ene.text = $"{blood} / 100";
     }
 }

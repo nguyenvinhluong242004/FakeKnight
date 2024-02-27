@@ -6,16 +6,17 @@ using TMPro;
 public class Skill : MonoBehaviour
 {
     public GameObject obj, cir;
-    [SerializeField] private PlayerMove player;
+    //[SerializeField] private PlayerMove player;
     [SerializeField] private TMP_Text timeLoop;
     public bool isOn;
     float alpha;
     float elapsedTime;
     [SerializeField] private float totalTime;
     [SerializeField] private int sk;
-
+    [SerializeField] private ObjUse objUse;
     void Start()
     {
+        objUse = FindObjectOfType<ObjUse>();
         isOn = false;
         cir.SetActive(false);
     }
@@ -36,13 +37,13 @@ public class Skill : MonoBehaviour
             {
                 ResetSK();
                 if (sk == 1)
-                    player.oneSkill = false;
+                    objUse.player.oneSkill = false;
                 else if(sk == 2)
-                    player.twoSkill = false;
+                    objUse.player.twoSkill = false;
                 else if (sk == 3)
-                    player.threeSkill = false;
+                    objUse.player.threeSkill = false;
                 else if (sk == 4)
-                    player.fourSkill = false;
+                    objUse.player.fourSkill = false;
             }
         }
     }

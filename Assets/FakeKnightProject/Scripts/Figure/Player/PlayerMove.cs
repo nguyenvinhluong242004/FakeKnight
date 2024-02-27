@@ -2,38 +2,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
 public class PlayerMove : MonoBehaviour
 {
+    [SerializeField] private UseSkill useSkill;
+    [SerializeField] private AnmPlayer anmPlayer;
     [SerializeField] public Animator anm;
     [SerializeField] public Camera mainCamera;
     [SerializeField] public int number;
     [SerializeField] public SpriteRenderer sprite;
-    [SerializeField] private Rigidbody2D rb;
-    float horizontalInput;
-    float verticalInput;
+    [SerializeField] public Rigidbody2D rb;
+    public float horizontalInput;
+    public float verticalInput;
     [SerializeField] public float speed;
 
     [SerializeField] public bool isSetLocation, isSetFire, isFlag, isRightLoca, isU, isD, isLR, isUD, isSkill, oneSkill, twoSkill, threeSkill, fourSkill;
     [SerializeField] public bool isChooseSk1, isChooseSk2, isChooseSk3, isChooseSk4;
     [SerializeField] private Joytick joytick;
-    [SerializeField] private GameObject arrow;
-    [SerializeField] private CircleCollider2D cir;
     [SerializeField] public PlayerImpact playerImpact;
-    [SerializeField] public GameObject scanner, scannerFire, scannerFires, Location, location, Fire, fire, Fires, fires, center;
+    [SerializeField] public GameObject Location, location, Fire, fire, Fires, fires;
     public Vector3 worldPosition;
     Vector3 k, kk;
-    Vector2 velocity_;
+    public Vector2 velocity_;
     private Vector2 startingPoint;
     public Vector3 pastPlayer;
     int leftTouch = 99;
     int rightTouch = 99;
-    [SerializeField] public RectTransform sta, bgSta;
-    [SerializeField] public Transform sk1, sk2, sk3, sk4;
-    [SerializeField] public Skill _sk1, _sk2, _sk3, _sk4;
-    // Start is called before the first frame update
+    [SerializeField] public ObjUse objUse;
     void Start()
     {
+        mainCamera = FindObjectOfType<Camera>();
+        objUse = FindObjectOfType<ObjUse>();
+        if (GetComponent<PhotonView>().IsMine)
+        {
+            objUse.player = gameObject.GetComponent<PlayerMove>();
+            objUse.cam.Follow = gameObject.transform;
+            GetComponent<PhotonView>().RPC("SyncPlayerID", RpcTarget.AllBuffered, number);
+        }
+        else
+            setPlayer();
+        objUse.loadDataPlayer.moneyPlayer = gameObject.GetComponent<MoneyPlayer>();
         isU = false;
         isD = true;
         isLR = false;
@@ -51,517 +60,224 @@ public class PlayerMove : MonoBehaviour
     void Update()
     {
         // move from mobile
-        int i = 0;
-        while (i < Input.touchCount)
+        if (GetComponent<PhotonView>().IsMine)
         {
-            Touch t = Input.GetTouch(i);
-            Vector2 touchPos = getTouchPosition(t.position); // * -1 for perspective cameras
-            if (t.phase == TouchPhase.Began)
+            int i = 0;
+            while (i < Input.touchCount)
             {
-                if (t.position.x > Screen.width / 2)
+                Touch t = Input.GetTouch(i);
+                Vector2 touchPos = getTouchPosition(t.position); // * -1 for perspective cameras
+                if (t.phase == TouchPhase.Began)
                 {
-                    rightTouch = t.fingerId;
-                    if (!oneSkill && touchPos.x > sk1.position.x - 0.6f && touchPos.x < sk1.position.x + 0.6f && touchPos.y > sk1.position.y - 0.6f && touchPos.y < sk1.position.y + 0.6f)
+                    if (t.position.x > Screen.width / 2)
                     {
-                        Debug.Log("use skill 1!");
-                        setSkillHero();
-                        isChooseSk1 = true;
-                    }
-                    else if (!twoSkill && touchPos.x > sk2.position.x - 0.6f && touchPos.x < sk2.position.x + 0.6f && touchPos.y > sk2.position.y - 0.6f && touchPos.y < sk2.position.y + 0.6f)
-                    {
-                        Debug.Log("use skill 2!");
-                        if (isChooseSk2)
+                        rightTouch = t.fingerId;
+                        if (!oneSkill && touchPos.x > objUse.sk1.position.x - 0.6f && touchPos.x < objUse.sk1.position.x + 0.6f && touchPos.y > objUse.sk1.position.y - 0.6f && touchPos.y < objUse.sk1.position.y + 0.6f)
                         {
-                            isSkill = false;
-                            _sk2.ResetSK();
-                            scanner.SetActive(false);
-                            isChooseSk2 = false;
-                        }    
-                        else
-                        {
-                            isChooseSk2 = true;
-                            setSkill2();
-                        }    
-                    }
-                    else if (!threeSkill && touchPos.x > sk3.position.x - 0.6f && touchPos.x < sk3.position.x + 0.6f && touchPos.y > sk3.position.y - 0.6f && touchPos.y < sk3.position.y + 0.6f)
-                    {
-                        Debug.Log("use skill 3!");
-                        if (isChooseSk3)
-                        {
-                            isSkill = false;
-                            _sk3.ResetSK();
-                            scanner.SetActive(false);
-                            isChooseSk3 = false;
+                            Debug.Log("use skill 1!");
+                            useSkill.setSkillHero();
+                            isChooseSk1 = true;
                         }
-                        else
+                        else if (!twoSkill && touchPos.x > objUse.sk2.position.x - 0.6f && touchPos.x < objUse.sk2.position.x + 0.6f && touchPos.y > objUse.sk2.position.y - 0.6f && touchPos.y < objUse.sk2.position.y + 0.6f)
                         {
-                            isChooseSk3 = true;
-                            setSkill3();
+                            Debug.Log("use skill 2!");
+                            if (isChooseSk2)
+                            {
+                                isSkill = false;
+                                objUse._sk2.ResetSK();
+                                objUse.scanner.SetActive(false);
+                                isChooseSk2 = false;
+                            }
+                            else
+                            {
+                                isChooseSk2 = true;
+                                useSkill.setSkill2();
+                            }
                         }
+                        else if (!threeSkill && touchPos.x > objUse.sk3.position.x - 0.6f && touchPos.x < objUse.sk3.position.x + 0.6f && touchPos.y > objUse.sk3.position.y - 0.6f && touchPos.y < objUse.sk3.position.y + 0.6f)
+                        {
+                            Debug.Log("use skill 3!");
+                            if (isChooseSk3)
+                            {
+                                isSkill = false;
+                                objUse._sk3.ResetSK();
+                                objUse.scanner.SetActive(false);
+                                isChooseSk3 = false;
+                            }
+                            else
+                            {
+                                isChooseSk3 = true;
+                                useSkill.setSkill3();
+                            }
+                        }
+                        else if (!fourSkill && touchPos.x > objUse.sk4.position.x - 0.6f && touchPos.x < objUse.sk4.position.x + 0.6f && touchPos.y > objUse.sk4.position.y - 0.6f && touchPos.y < objUse.sk4.position.y + 0.6f)
+                        {
+                            Debug.Log("use skill 4!");
+                            if (isChooseSk4)
+                            {
+                                isSkill = false;
+                                objUse._sk4.ResetSK();
+                                objUse.scanner.SetActive(false);
+                                isChooseSk4 = false;
+                            }
+                            else
+                            {
+                                isChooseSk4 = true;
+                                useSkill.setSkill4();
+                            }
+                        }
+                        else if (isChooseSk2 || isChooseSk3 || isChooseSk4)
+                            useSkill.getSkill();
                     }
-                    else if (!fourSkill && touchPos.x > sk4.position.x - 0.6f && touchPos.x < sk4.position.x + 0.6f && touchPos.y > sk4.position.y - 0.6f && touchPos.y < sk4.position.y + 0.6f)
+                    else
                     {
-                        Debug.Log("use skill 4!");
-                        if (isChooseSk4)
+                        if (touchPos.x > objUse.sta.position.x - 1f && touchPos.x < objUse.sta.position.x + 1f && touchPos.y > objUse.sta.position.y - 1f && touchPos.y < objUse.sta.position.y + 1f)
                         {
-                            isSkill = false;
-                            _sk4.ResetSK();
-                            scanner.SetActive(false);
-                            isChooseSk4 = false;
+                            leftTouch = t.fingerId;
+                            startingPoint = touchPos;
+                            pastPlayer = transform.position;
+                            joytick.choose(true);
+                            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
                         }
-                        else
-                        {
-                            isChooseSk4 = true;
-                            setSkill4();
-                        }
+                        else if (isChooseSk2 || isChooseSk3 || isChooseSk4)
+                            useSkill.getSkill();
                     }
-                    else if (isChooseSk2 || isChooseSk3 || isChooseSk4)
-                        getSkill();
                 }
-                else
+                else if (t.phase == TouchPhase.Moved && leftTouch == t.fingerId)
                 {
-                    if (touchPos.x > sta.position.x - 1f && touchPos.x < sta.position.x + 1f && touchPos.y > sta.position.y - 1f && touchPos.y < sta.position.y + 1f)
+                    Debug.Log("move");
+                    Vector2 change = transform.position - pastPlayer;
+                    pastPlayer = transform.position;
+                    startingPoint += change;
+
+                    Vector2 offset = touchPos - startingPoint;
+                    Vector2 direction = Vector2.ClampMagnitude(offset, 1f);
+
+                    velocity_ = direction.normalized;
+
+                    objUse.sta.transform.position = new Vector3(objUse.bgSta.transform.position.x + direction.x, objUse.bgSta.transform.position.y + direction.y, objUse.sta.transform.position.z);
+
+                }
+                else if (t.phase == TouchPhase.Ended && rightTouch == t.fingerId)
+                {
+                    rightTouch = 99;
+                }
+                else if (t.phase == TouchPhase.Ended && leftTouch == t.fingerId)
+                {
+                    Debug.Log("don't move");
+                    leftTouch = 99;
+                    joytick.choose(false);
+                    objUse.sta.transform.position = new Vector3(objUse.bgSta.transform.position.x, objUse.bgSta.transform.position.y, objUse.sta.transform.position.z);
+                    velocity_ = new Vector2(0, 0);
+                    rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
+                }
+                rb.velocity = velocity_ * speed;
+                //if (isTouch)
+                //{
+                //    rb.velocity = new Vector2(rb.velocity.x, 6.5f);
+                //    isTouch = false;
+                //}
+                ++i;
+            }
+            anmPlayer.UpdateAnimationMobile();
+            // Move from keyboard
+            /*
+            if (Input.GetMouseButtonDown(0))
+            {
+                getSkill();
+            }
+
+            horizontalInput = Input.GetAxisRaw("Horizontal");
+            verticalInput = Input.GetAxisRaw("Vertical");
+            if (Input.GetKeyDown("space") && !isSkill)
+            {
+                setSkillHero();
+            }
+            if (Input.GetKeyDown("u") && !isSkill)
+            {
+                setSkill2();
+            }
+            if (Input.GetKeyDown("i") && !isSkill)
+            {
+                setSkill3();
+            }
+            if (Input.GetKeyDown("o") && !isSkill)
+            {
+                setSkill4();
+            }
+            setJoytick();
+            Vector2 velocity = new Vector2(horizontalInput, verticalInput);
+            //rb.velocity = velocity * speed;
+            if (!isSetLocation)
+            {
+                rb.velocity = velocity * speed;
+            }
+            */
+            if (isSetLocation)
+            {
+                if (isFlag)
+                {
+                    if (isRightLoca)
                     {
-                        leftTouch = t.fingerId;
-                        startingPoint = touchPos;
-                        pastPlayer = transform.position;
-                        joytick.choose(true);
+                        kk = new Vector3(-1.5f, 0, 0);
+
                     }
-                    else if (isChooseSk2 || isChooseSk3 || isChooseSk4)
-                        getSkill();
+                    else
+                    {
+                        kk = new Vector3(1.5f, 0, 0);
+
+                    }
+                    isFlag = false;
+                    k = worldPosition + kk - transform.position;
+                    //if (k.magnitude>2f)
+                    {
+                        k = k.normalized * 2.4f;
+                    }
+                    //else { }
                 }
-            }
-            else if (t.phase == TouchPhase.Moved && leftTouch == t.fingerId)
-            {
-                Debug.Log("move");
-                Vector2 change = transform.position - pastPlayer;
-                pastPlayer = transform.position;
-                startingPoint += change;
-
-                Vector2 offset = touchPos - startingPoint;
-                Vector2 direction = Vector2.ClampMagnitude(offset, 1f);
-
-                velocity_ = direction.normalized;
-
-                sta.transform.position = new Vector3(bgSta.transform.position.x + direction.x, bgSta.transform.position.y + direction.y, sta.transform.position.z);
-
-            }
-            else if (t.phase == TouchPhase.Ended && rightTouch == t.fingerId)
-            {
-                rightTouch = 99;
-            }
-            else if (t.phase == TouchPhase.Ended && leftTouch == t.fingerId)
-            {
-                Debug.Log("don't move");
-                leftTouch = 99;
-                joytick.choose(false);
-                sta.transform.position = new Vector3(bgSta.transform.position.x, bgSta.transform.position.y, sta.transform.position.z);
-                velocity_ = new Vector2(0, 0);
-            }
-            rb.velocity = velocity_ * speed;
-            //if (isTouch)
-            //{
-            //    rb.velocity = new Vector2(rb.velocity.x, 6.5f);
-            //    isTouch = false;
-            //}
-            ++i;
-        }
-        UpdateAnimationMobile();
-        // Move from keyboard
-        /*
-        if (Input.GetMouseButtonDown(0))
-        {
-            getSkill();
-        }
-
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
-        if (Input.GetKeyDown("space") && !isSkill)
-        {
-            setSkillHero();
-        }
-        if (Input.GetKeyDown("u") && !isSkill)
-        {
-            setSkill2();
-        }
-        if (Input.GetKeyDown("i") && !isSkill)
-        {
-            setSkill3();
-        }
-        if (Input.GetKeyDown("o") && !isSkill)
-        {
-            setSkill4();
-        }
-        UpdateAnimation();
-        setJoytick();
-        Vector2 velocity = new Vector2(horizontalInput, verticalInput);
-        //rb.velocity = velocity * speed;
-        if (!isSetLocation)
-        {
-            rb.velocity = velocity * speed;
-        }
-        */
-        if (isSetLocation)
-        {
-            if (isFlag)
-            {
-                if (isRightLoca)
+                if (Mathf.Abs(transform.position.y - worldPosition.y) < 0.2f && Mathf.Abs(transform.position.x - worldPosition.x - kk.x) < 0.2f)
                 {
-                    kk = new Vector3(-1.5f, 0, 0);
+                    if (isRightLoca)
+                    {
+                        k.x = 1f;
+                        k.y = 0;
+                    }
+                    else
+                    {
+                        k.x = -1f;
+                        k.y = 0;
+                    }
+                }
+                rb.velocity = new Vector2(k.x, k.y) * 10f;
 
-                }
-                else
-                {
-                    kk = new Vector3(1.5f, 0, 0);
-
-                }
-                isFlag = false;
-                k = worldPosition + kk - transform.position;
-                //if (k.magnitude>2f)
-                {
-                    k = k.normalized * 2.4f;
-                }
-                //else { }
             }
-            if (Mathf.Abs(transform.position.y - worldPosition.y) < 0.2f && Mathf.Abs(transform.position.x - worldPosition.x - kk.x) < 0.2f)
-            {
-                if (isRightLoca)
-                {
-                    k.x = 1f;
-                    k.y = 0;
-                }
-                else
-                {
-                    k.x = -1f;
-                    k.y = 0;
-                }
-            }
-            rb.velocity = new Vector2(k.x, k.y) * 10f;
-
+            //mainCamera.transform.position = new Vector3(transform.position.x, transform.position.y, mainCamera.transform.position.z);
         }
-        //mainCamera.transform.position = new Vector3(transform.position.x, transform.position.y, mainCamera.transform.position.z);
+    }
+    [PunRPC]
+    void SyncPlayerID(int id)
+    {
+        number = id;
     }
     Vector2 getTouchPosition(Vector2 touchPosition)
     {
         return mainCamera.ScreenToWorldPoint(new Vector3(touchPosition.x, touchPosition.y, transform.position.z));
     }
-    void getSkill()
+    public void setPlayer()
     {
-        worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Debug.Log(worldPosition);
-        if (!twoSkill && scanner.activeSelf)
+        // set figure
+        Debug.Log(number);
+        objUse.objectManager.imgProfile.sprite = objUse.objectManager.imgPlayers[number];
+        if (GetComponent<PhotonView>().IsMine)
         {
-            Vector2 v = worldPosition - scanner.transform.position;
-            if (v.magnitude < 3.9f)
-            {
-                isSkill = true;
-                isChooseSk2 = false;
-                _sk2.isOn = true;
-                twoSkill = true;
-                scanner.SetActive(false);
-                Debug.Log("choose");
-                if (worldPosition.x - scanner.transform.position.x >= 0)
-                {
-                    location = Instantiate(Location, new Vector3(worldPosition.x, worldPosition.y, Location.transform.position.z), Location.transform.rotation);
-                    isRightLoca = true;
-                    sprite.flipX = false;
-                }
-                else
-                {
-                    location = Instantiate(Location, new Vector3(worldPosition.x, worldPosition.y, Location.transform.position.z), Quaternion.Euler(0, 0, 180f));
-                    isRightLoca = false;
-                    sprite.flipX = true;
-                }
-                isSetLocation = true;
-                isFlag = true;
-                //gameObject.SetActive(false);
-                sprite.enabled = false;
-                isLR = true;
-                isUD = false;
-                isU = false;
-                isD = false;
-                Invoke("resetLocation", 0.6f);
-            }
+            // get Music, Sound Playerr
+            objUse.objectManager.isSound = objUse.dataPlayer.isSound;
+            objUse.objectManager._sound.isOn = objUse.dataPlayer.isSound;
+            if (objUse.dataPlayer.isMusic)
+                objUse.objectManager.audio.Play();
+            objUse.objectManager._muic.isOn = objUse.dataPlayer.isMusic;
+            objUse.objectManager._muic.isOn = objUse.dataPlayer.isMusic;
         }
-        else if (!threeSkill && scannerFire.activeSelf)
-        {
-            isChooseSk3 = false;
-            isSkill = true;
-            _sk3.isOn = true;
-            threeSkill = true;
-            fire = Instantiate(Fire, new Vector3(worldPosition.x, worldPosition.y, Fire.transform.position.z), Fire.transform.rotation);
-            isSetFire = true;
-            scannerFire.SetActive(false);
-            Invoke("resetFire", 0.7f);
-
-        }
-        else if (!fourSkill && scannerFires.activeSelf)
-        {
-            isChooseSk4 = false;
-            isSkill = true;
-            _sk4.isOn = true;
-            center.transform.position = new Vector3(worldPosition.x, worldPosition.y, center.transform.position.z);
-            fourSkill = true;
-            center.SetActive(true);
-            fires = Instantiate(Fires, new Vector3(worldPosition.x - 1f, worldPosition.y + 3.6f, Fires.transform.position.z), Fires.transform.rotation);
-
-            scannerFires.SetActive(false);
-            Invoke("resetFires", 1.2f);
-
-        }
-    }
-    void resetLocation()
-    {
-        //gameObject.SetActive(true);
-        sprite.enabled = true;
-        location.SetActive(false);
-        Destroy(location);
-        isSetLocation = false;
-        rb.velocity = new Vector2(0, 0);
-        isSkill = false;
-        //twoSkill = false;
-    }
-    void resetFire()
-    {
-        fire.SetActive(false);
-        Destroy(fire);
-        isSetFire = false;
-        isSkill = false;
-        //threeSkill = false;
-    }
-    void resetFires()
-    {
-        fires.SetActive(false);
-        Destroy(fires);
-        center.SetActive(false);
-        isSkill = false;
-        //fourSkill = false;
-    }
-    void UpdateAnimation()
-    {
-        if (!isSkill)
-        {
-            if (horizontalInput > 0.01f)
-            {
-                if (sprite.flipX)
-                    sprite.flipX = !sprite.flipX;
-                anm.Play("runLR");
-                isLR = true;
-                isUD = false;
-                isU = false;
-                isD = false;
-            }
-            else if (horizontalInput < -0.01f)
-            {
-                if (!sprite.flipX)
-                    sprite.flipX = !sprite.flipX;
-                anm.Play("runLR");
-                isLR = true;
-                isUD = false;
-                isU = false;
-                isD = false;
-            }
-            else if (horizontalInput == 0f)
-            {
-                isLR = false;
-            }
-
-
-            if (verticalInput > 0.01f)
-            {
-                anm.Play("runBehind");
-                isUD = true;
-                isU = true;
-                isD = false;
-                isLR = false;
-            }
-            else if (verticalInput < -0.01f)
-            {
-                anm.Play("runFront");
-                isUD = true;
-                isD = true;
-                isU = false;
-                isLR = false;
-            }
-            else if (verticalInput == 0f)
-            {
-                isUD = false;
-            }
-
-            if (!isLR && !isUD)
-            {
-                if (isU)
-                    anm.Play("idleBehind");
-                else if (isD)
-                    anm.Play("idleFront");
-                else
-                    anm.Play("idleLR");
-            }
-        }
-        else if (isChooseSk1)
-        {
-            isChooseSk1 = false;
-            if (isU)
-            {
-                anm.Play("skillBehind");
-            }
-            else if (isD)
-            {
-                anm.Play("skillFront");
-            }
-            else
-            {
-                anm.Play("skillLR");
-            }
-            Invoke("resetSkill", 0.3f);
-        }
-    }
-    void UpdateAnimationMobile()
-    {
-        if (!isSkill)
-        {
-            if (velocity_.x > 0.01f && Mathf.Abs(velocity_.x) >= 0.4f)
-            {
-                if (sprite.flipX)
-                    sprite.flipX = !sprite.flipX;
-                anm.Play("runLR");
-                isLR = true;
-                isUD = false;
-                isU = false;
-                isD = false;
-            }
-            else if (velocity_.x < -0.01f && Mathf.Abs(velocity_.x) >= 0.4f)
-            {
-                if (!sprite.flipX)
-                    sprite.flipX = !sprite.flipX;
-                anm.Play("runLR");
-                isLR = true;
-                isUD = false;
-                isU = false;
-                isD = false;
-            }
-            else if (velocity_.x == 0f)
-            {
-                isLR = false;
-            }
-
-
-            if (velocity_.y > 0.01f && Mathf.Abs(velocity_.x) < 0.4f)
-            {
-                anm.Play("runBehind");
-                isUD = true;
-                isU = true;
-                isD = false;
-                isLR = false;
-            }
-            else if (velocity_.y < -0.01f && Mathf.Abs(velocity_.x) < 0.4f)
-            {
-                anm.Play("runFront");
-                isUD = true;
-                isD = true;
-                isU = false;
-                isLR = false;
-            }
-            else if (velocity_.y == 0f)
-            {
-                isUD = false;
-
-            }
-
-            if (!isLR && !isUD)
-            {
-                if (isU)
-                    anm.Play("idleBehind");
-                else if (isD)
-                    anm.Play("idleFront");
-                else
-                    anm.Play("idleLR");
-            }
-        }
-        else if (isChooseSk1) 
-        {
-            isChooseSk1 = false;
-            if (isU) 
-            {
-                anm.Play("skillBehind");
-            }
-            else if (isD)
-            {
-                anm.Play("skillFront");
-            }
-            else
-            {
-                anm.Play("skillLR");
-            }
-            Invoke("resetSkill", 0.3f);
-        }
-    }
-    void resetSkill()
-    {
-        isSkill = false;
-        //oneSkill = false;
-    }
-    void setSkillHero()
-    {
-        isSkill = true;
-        oneSkill = true;
-        _sk1.timeSkill();
-        _sk1.isOn = true;
-        if (number == 1)
-        {
-            GameObject _arrow = Instantiate(arrow, transform.position, arrow.transform.rotation);
-            Arrow __arrow = _arrow.GetComponent<Arrow>();
-            if (isU)
-            {
-                __arrow.y = 7f;
-                __arrow.x = 0f;
-                __arrow.transform.eulerAngles = new Vector3(0f, 0f, 0f);
-                __arrow.transform.position += new Vector3(0f, 0.1f, 0f);
-            }
-            else if (isD)
-            {
-                __arrow.y = -7f;
-                __arrow.x = 0f;
-                __arrow.transform.eulerAngles = new Vector3(0f, 0f, 180f);
-                __arrow.transform.position += new Vector3(0f, -0.2f, 0f);
-            }
-            else
-            {
-                if (sprite.flipX)
-                {
-                    __arrow.y = 0f;
-                    __arrow.x = -7f;
-                    __arrow.transform.eulerAngles = new Vector3(0f, 0f, 90f);
-                    __arrow.transform.position += new Vector3(-0.2f, -0.3f, 0f);
-                }
-                else
-                {
-                    __arrow.y = 0f;
-                    __arrow.x = 7f;
-                    __arrow.transform.eulerAngles = new Vector3(0f, 0f, -90f);
-                    __arrow.transform.position += new Vector3(0.2f, -0.3f, 0f);
-                }
-            }
-            __arrow.isOn = true;
-        }
-    }
-    void setSkill2()
-    {
-        //isSkill = true;
-        scanner.SetActive(true);
-        _sk2.timeSkill();
-    }
-    void setSkill3()
-    {
-        //isSkill = true;
-        scannerFire.SetActive(true);
-        _sk3.timeSkill();
-    }
-    void setSkill4()
-    {
-        //isSkill = true;
-        scannerFires.SetActive(true);
-        _sk4.timeSkill();
     }
     void setJoytick()
     {
@@ -591,17 +307,6 @@ public class PlayerMove : MonoBehaviour
         if (horizontalInput == 0f && verticalInput == 0f)
         {
             joytick.choose(false);
-        }
-    }
-    public void setBoxCollider()
-    {
-        if (number == 0)
-        {
-            cir.offset = new Vector2(cir.offset.x, -0.72f);
-        }
-        else if (number == 1)
-        {
-            cir.offset = new Vector2(cir.offset.x, -0.47f);
         }
     }
 }

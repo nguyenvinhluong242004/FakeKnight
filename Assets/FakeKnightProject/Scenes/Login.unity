@@ -3261,6 +3261,7 @@ MonoBehaviour:
   persent: {fileID: 861648448}
   reset: 0
   isDone: 0
+  isDonePhoton: 0
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -11417,6 +11418,10 @@ PrefabInstance:
     - target: {fileID: 1152108070030854922, guid: b75583d85e8481f4e967ba3fcd72cc8a, type: 3}
       propertyPath: m_Name
       value: Keyboard
+      objectReference: {fileID: 0}
+    - target: {fileID: 1152108070030854922, guid: b75583d85e8481f4e967ba3fcd72cc8a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1152108070030854923, guid: b75583d85e8481f4e967ba3fcd72cc8a, type: 3}
       propertyPath: m_Pivot.x

@@ -8,7 +8,7 @@ public class LoadingGame : MonoBehaviour
     [SerializeField] private GameObject bgrLoad, load;
     [SerializeField] private float blood, p;
     [SerializeField] private TMP_Text persent;
-    public bool reset, isDone;
+    public bool reset, isDone, isDonePhoton;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +20,7 @@ public class LoadingGame : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (blood<90 && !reset && !isDone)
+        if (blood<99 && !reset && (!isDone || !isDonePhoton))
         {
             setLoadingGame(false);
             reset = true;
@@ -34,8 +34,8 @@ public class LoadingGame : MonoBehaviour
             blood = 100;
             Invoke("loadSucess", 0.7f);
         }    
-        else
-            blood += 2;
+        else    
+            blood += 1;
         float k = blood / 100f;
         persent.text = blood.ToString("F0") + " %";
         load.transform.localScale = new Vector3(k, load.transform.localScale.y, load.transform.localScale.z);
