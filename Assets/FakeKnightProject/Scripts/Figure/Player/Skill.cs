@@ -37,7 +37,10 @@ public class Skill : MonoBehaviour
             {
                 ResetSK();
                 if (sk == 1)
-                    objUse.player.oneSkill = false;
+                {
+                    Debug.Log("reset");
+                    objUse.player.isChooseSk1 = false;
+                }    
                 else if(sk == 2)
                     objUse.player.twoSkill = false;
                 else if (sk == 3)

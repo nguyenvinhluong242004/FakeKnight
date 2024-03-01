@@ -18,7 +18,7 @@ public class ObjectManager : MonoBehaviour
     [SerializeField] public GameObject equip;
     [SerializeField] public UiInforItem uiInforItem;
     [SerializeField] public UiBuy uiBuy;
-    [SerializeField] public MoneyPlayer moneyPlayer;
+    [SerializeField] public ObjUse objUse;
     [SerializeField] public Item item;
     [SerializeField] public Image imgProfile;
     [SerializeField] public RuntimeAnimatorController[] anmPlayers;

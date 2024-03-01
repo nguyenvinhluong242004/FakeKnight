@@ -57,7 +57,6 @@ public class LoadDataPlayer : MonoBehaviour
     {
         setPlayer();
         setItemBag();
-        moneyPlayer.setValue();
         loadingGame.isDone = true;
         if (loadingGame.isDone && loadingGame.isDonePhoton)
             loadingGame.setLoadingGame(true);
@@ -136,6 +135,7 @@ public class LoadDataPlayer : MonoBehaviour
     public void setPlayer()
     {
         objectManager.imgProfile.sprite = objectManager.imgPlayers[dataPlayer.idPlayer];
+
         // get Music, Sound Playerr
         objectManager.isSound = dataPlayer.isSound; 
         objectManager._sound.isOn = dataPlayer.isSound; 

@@ -40,6 +40,10 @@ MonoBehaviour:
   - Fire
   - RespawnSpaceship
   - SyncPlayerID
+  - PlayAnimation
+  - SyncFlipX
+  - ReceiveMessage
+  - InitializeEnemy
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

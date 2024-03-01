@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ContentScrollView : MonoBehaviour
 {
-    [SerializeField] private RectTransform item1, item2, item3;
+    [SerializeField] private RectTransform[] items;
     [SerializeField] private RectTransform po;
     [SerializeField] private BoxCollider2D box;
     bool isClick;
@@ -22,82 +22,74 @@ public class ContentScrollView : MonoBehaviour
         {
             if (po.anchoredPosition.x >= -300f)
             {
-                item1.localScale = new Vector2(0.75f + 0.25f * (150f + po.anchoredPosition.x) / 150f, 0.75f + 0.25f * (150f + po.anchoredPosition.x) / 150f);
-                item2.localScale = new Vector2(0.75f + 0.25f * (-150f - po.anchoredPosition.x) / 150f, 0.75f + 0.25f * (-150f - po.anchoredPosition.x) / 150f);
+                items[0].localScale = new Vector2(0.75f + 0.25f * (150f + po.anchoredPosition.x) / 150f, 0.75f + 0.25f * (150f + po.anchoredPosition.x) / 150f);
+                items[1].localScale = new Vector2(0.75f + 0.25f * (-150f - po.anchoredPosition.x) / 150f, 0.75f + 0.25f * (-150f - po.anchoredPosition.x) / 150f);
                 box.offset = new Vector2(450f + (-300f - po.anchoredPosition.x), box.offset.y);
-            }    
-            else //if (po.anchoredPosition.x <= -274f)
+            }
+            else if (po.anchoredPosition.x >= -600f)
             {
-                item2.localScale = new Vector2(0.75f + 0.25f * (450f + po.anchoredPosition.x) / 150f, 0.75f + 0.25f * (450f + po.anchoredPosition.x) / 150f);
-                item3.localScale = new Vector2(0.75f + 0.25f * (-450f - po.anchoredPosition.x) / 150f, 0.75f + 0.25f * (-450f - po.anchoredPosition.x) / 150f); 
+                items[1].localScale = new Vector2(0.75f + 0.25f * (450f + po.anchoredPosition.x) / 150f, 0.75f + 0.25f * (450f + po.anchoredPosition.x) / 150f);
+                items[2].localScale = new Vector2(0.75f + 0.25f * (-450f - po.anchoredPosition.x) / 150f, 0.75f + 0.25f * (-450f - po.anchoredPosition.x) / 150f);
                 box.offset = new Vector2(450f + (-300f - po.anchoredPosition.x), box.offset.y);
-            }    
+            }
+            else if (po.anchoredPosition.x >= -900f)
+            {
+                items[2].localScale = new Vector2(0.75f + 0.25f * (750f + po.anchoredPosition.x) / 150f, 0.75f + 0.25f * (750f + po.anchoredPosition.x) / 150f);
+                items[3].localScale = new Vector2(0.75f + 0.25f * (-750f - po.anchoredPosition.x) / 150f, 0.75f + 0.25f * (-750f - po.anchoredPosition.x) / 150f);
+                box.offset = new Vector2(750f + (-300f - po.anchoredPosition.x), box.offset.y);
+            }
+            else
+            {
+                items[3].localScale = new Vector2(0.75f + 0.25f * (1050f + po.anchoredPosition.x) / 150f, 0.75f + 0.25f * (1050f + po.anchoredPosition.x) / 150f);
+                items[4].localScale = new Vector2(0.75f + 0.25f * (-1050f - po.anchoredPosition.x) / 150f, 0.75f + 0.25f * (-1050f - po.anchoredPosition.x) / 150f);
+                box.offset = new Vector2(1050f + (-300f - po.anchoredPosition.x), box.offset.y);
+            }
         }
         else
         {
             if (po.anchoredPosition.x >= -150f)
             {
-                setItem1();
+                item = 0;
+                setItem(item);
             }
-            else if (po.anchoredPosition.x <= -450f)
+            else if (po.anchoredPosition.x <= -1050f)
             {
-                setItem3();
+                item = 4;
+                setItem(item);
             }
             else
             {
-                setItem2();
+                item = Mathf.RoundToInt(Mathf.Abs(po.anchoredPosition.x) / 300.0f);
+                setItem(item);
             }
         }
     }
-    void setItem1()
+    void setItem(int idx)
     {
-        item = 1;
-        po.anchoredPosition = new Vector2(0f, po.anchoredPosition.y);
-        item1.localScale = new Vector2(1f, 1f);
-        item2.localScale = new Vector2(0.5f, 0.5f);
-        item3.localScale = new Vector2(0.5f, 0.5f);
-        box.offset = new Vector2(150f, box.offset.y);
-    }
-    void setItem2()
-    {
-        item = 2;
-        po.anchoredPosition = new Vector2(-300f, po.anchoredPosition.y);
-        item2.localScale = new Vector2(1f, 1f);
-        item1.localScale = new Vector2(0.5f, 0.5f);
-        item3.localScale = new Vector2(0.5f, 0.5f);
-        box.offset = new Vector2(450f, box.offset.y);
-    }
-    void setItem3()
-    {
-        item = 3;
-        po.anchoredPosition = new Vector2(-600f, po.anchoredPosition.y);
-        item3.localScale = new Vector2(1f, 1f);
-        item2.localScale = new Vector2(0.5f, 0.5f);
-        item1.localScale = new Vector2(0.5f, 0.5f);
-        box.offset = new Vector2(750f, box.offset.y);
+        Debug.Log(idx);
+        po.anchoredPosition = new Vector2(-300 * idx, po.anchoredPosition.y);
+        items[idx].localScale = new Vector2(1f, 1f);
+        for (int i = 0; i < items.Length; i++)
+            if (i != idx)
+                items[i].localScale = new Vector2(0.5f, 0.5f);
+        box.offset = new Vector2(150 + 300 * idx, box.offset.y);
     }
     public void getItem(string direction)
     {
         if (direction=="right")
         {
-            if (item==1)
+            if (item<4)
             {
-                setItem2();
-            }   
-            else if (item == 2)
-            {
-                setItem3();
-            }
+                item++;
+                setItem(item);
+            }    
         }   
         else
         {
-            if (item == 2)
+            if (item > 0)
             {
-                setItem1();
-            }
-            else if (item == 3)
-            {
-                setItem2();
+                item--;
+                setItem(item);
             }
         }    
     }    

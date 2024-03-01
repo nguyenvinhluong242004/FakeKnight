@@ -9,6 +9,8 @@ using Photon.Realtime;
 public class PhotonManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private LoadDataPlayer loadDataPlayer;
+    [SerializeField] private ObjUse objUse;
+    [SerializeField] private ObjectManager objectManager;
     [SerializeField] private LoadingGame loadingGame;
     [SerializeField] public string playerName, nameServer;
     //public UiRoomProfile roomPrefab;
@@ -17,8 +19,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
 
     public static PhotonManager instance;
-    public string photonPlayer0 = "Player0";
-    public string photonPlayer1 = "Player1";
+    public string photonPlayer = "Player";
+    public string photonSlime = "Slime";
     public List<PlayerProfile> players = new List<PlayerProfile>();
     private void Start()
     {
@@ -37,7 +39,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         Debug.Log(transform.name + ": Login " + playerName);
         PhotonNetwork.AutomaticallySyncScene = true;
         Debug.Log(PhotonNetwork.LocalPlayer.NickName);
-        PhotonNetwork.LocalPlayer.NickName = loadDataPlayer.dataPlayer.name;
+        PhotonNetwork.LocalPlayer.NickName = $"{loadDataPlayer.dataPlayer.name} - {loadDataPlayer.dataPlayer.idPlayer}";
         PhotonNetwork.ConnectUsingSettings();
     }
     public override void OnJoinedLobby()
@@ -53,13 +55,13 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public virtual void Create()
     {
         Debug.Log(transform.name + ": Create server " + nameServer);
-        PhotonNetwork.LocalPlayer.NickName = loadDataPlayer.dataPlayer.name;
+        //PhotonNetwork.LocalPlayer.NickName = loadDataPlayer.dataPlayer.name;
         PhotonNetwork.CreateRoom(nameServer);
     }
     public virtual void Join()
     {
         Debug.Log(transform.name + ": Join room " + nameServer);
-        PhotonNetwork.LocalPlayer.NickName = loadDataPlayer.dataPlayer.name;
+        //PhotonNetwork.LocalPlayer.NickName = loadDataPlayer.dataPlayer.name;
         PhotonNetwork.JoinRoom(nameServer);
     }
     public virtual void Leave()
@@ -70,6 +72,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public override void OnCreatedRoom()
     {
         Debug.Log("OnCreatedRoom");
+
+        GameObject p = PhotonNetwork.Instantiate(this.photonSlime, Vector3.zero, Quaternion.identity);
         //loadingGame.isDonePhoton = true;
         //if (loadingGame.isDone && loadingGame.isDonePhoton)
         //    loadingGame.setLoadingGame(true);
@@ -108,6 +112,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         if (servers.Count == 0)
         {
             Create();
+
             Debug.Log("kkk");
         }
         else
@@ -177,14 +182,39 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             this.LoadPlayerPrefab();
             return;
         }
+        //int playerCount = PhotonNetwork.CurrentRoom.Players.Count;
+        //Debug.Log(playerCount);
+        //foreach (KeyValuePair<int, Player> playerData in PhotonNetwork.CurrentRoom.Players)
+        //{
+        //    int id = -1;
+        //    string _name = "";
+        //    string nickName = playerData.Value.NickName;
+        //    string[] parts = nickName.Split('-'); // Tách chuỗi thành hai phần dựa trên dấu gạch ngang "-"
+        //    if (parts.Length == 2)
+        //    {
+        //        _name = parts[0].Trim(); // Lấy phần đầu tiên và loại bỏ khoảng trắng xung quanh
+        //        id = int.Parse(parts[1].Trim()); // Lấy phần thứ hai và chuyển đổi sang số nguyên
+        //    }
+        //    if (_name != loadDataPlayer.dataPlayer.name)
+        //    {
+        //        Debug.Log("trong vong for");
+        //        // Spawn playerPrefab tương ứng
+        //        GameObject playerr = PhotonNetwork.Instantiate(this.photonPlayer, Vector3.zero, Quaternion.identity);
+        //        Debug.Log("id player " + id);
+        //        playerr.GetComponent<PlayerMove>().setPlayer(id);
+        //        playerr.GetComponent<PlayerMove>().textName.text = name;
+        //    }    
+            
+        //    //playerr.transform.localScale = new Vector3(1, 1, 1); 
+        //}
         // xử lí id: chua
-        GameObject playerObj;
-        if (loadDataPlayer.dataPlayer.idPlayer == 0)
-            playerObj = Resources.Load(this.photonPlayer0) as GameObject;
-        else
-            playerObj = Resources.Load(this.photonPlayer1) as GameObject;
-        GameObject player = Instantiate(playerObj, Vector3.zero, Quaternion.identity);
-        player.transform.localScale = new Vector3(1, 1, 1);
+        //GameObject playerObj;
+        //if (loadDataPlayer.dataPlayer.idPlayer == 0)
+        //    playerObj = Resources.Load(this.photonPlayer0) as GameObject;
+        //else
+        //    playerObj = Resources.Load(this.photonPlayer1) as GameObject;
+        //GameObject player = Instantiate(playerObj, Vector3.zero, Quaternion.identity);
+        //player.transform.localScale = new Vector3(1, 1, 1);
     }
 
 
@@ -195,36 +225,57 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         PlayerProfile playerProfile;
         foreach (KeyValuePair<int, Player> playerData in PhotonNetwork.CurrentRoom.Players)
         {
-            Debug.Log(playerData.Value.NickName);
-            playerProfile = new PlayerProfile 
+            string nickName = playerData.Value.NickName;
+            string[] parts = nickName.Split('-'); 
+            if (parts.Length == 2)
             {
-                nickName = playerData.Value.NickName
-            };
-            this.players.Add(playerProfile);
+                string name = parts[0].Trim(); 
+                int id = int.Parse(parts[1].Trim()); 
+
+                // Tạo một đối tượng PlayerProfile mới với name
+                playerProfile = new PlayerProfile
+                {
+                    nickName = name
+                };
+                Debug.Log("Name: " + name + "Id: " + id);
+                this.players.Add(playerProfile);
+            }
         }
     }
     protected virtual void LoadPlayerPrefab()
     {
-        GameObject player;
-        if (loadDataPlayer.dataPlayer.idPlayer == 0)
-            player = PhotonNetwork.Instantiate(this.photonPlayer0, Vector3.zero, Quaternion.identity);
-        else
-            player = PhotonNetwork.Instantiate(this.photonPlayer1, Vector3.zero, Quaternion.identity);
-
-        //player.transform.localScale = new Vector3(1, 1, 1);
-        //player.GetComponent<PlayerMove>().check = true;
-        //GameObject _joy = GameObject.Find("joy");
-        //GameObject _bgr = GameObject.Find("bgr");
-        //player.GetComponent<PlayerMove>().sta = _joy.transform;
-        //player.GetComponent<PlayerMove>().bgSta = _bgr.transform;
+        GameObject player = PhotonNetwork.Instantiate(this.photonPlayer, Vector3.zero, Quaternion.identity);
+        Debug.Log("master " + loadDataPlayer.dataPlayer.idPlayer);
+        player.GetComponent<PlayerMove>().setPlayer(loadDataPlayer.dataPlayer.idPlayer);
+        objectManager.imgProfile.sprite = objectManager.imgPlayers[loadDataPlayer.dataPlayer.idPlayer];
+        player.GetComponent<PlayerMove>().textName.text = loadDataPlayer.dataPlayer.name;
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         Debug.Log("OnPlayerEnteredRoom: " + newPlayer.NickName);
+        //EnemyLevel1[] enes = FindObjectsOfType<EnemyLevel1>();
+        //GetComponent<PhotonView>().GetComponent<PhotonView>().RPC("InitializeEnemy", RpcTarget.OthersBuffered, enes);
+        //if (PhotonNetwork.IsMasterClient)
+        //{
+        //    //EnemyLevel1[] enes = FindObjectsOfType<EnemyLevel1>();
+        //    //GetComponent<PhotonView>().RPC("InitializeEnemy", RpcTarget.OthersBuffered, enes);
+        //}
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         Debug.Log("OnPlayerLeftRoom: " + otherPlayer.NickName);
     }
+    [PunRPC]
+    public void InitializeEnemy(EnemyLevel1[] enes)
+    {
+        Debug.Log("koooooooooooooooooooo");
+        if (PhotonNetwork.NetworkClientState == ClientState.Joined)
+        {
+            foreach (EnemyLevel1 e in enes)
+            {
+                Debug.Log(e.transform.position);
+            }
+        }    
+    }    
 }

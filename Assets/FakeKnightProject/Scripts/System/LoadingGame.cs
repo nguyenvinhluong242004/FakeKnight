@@ -20,7 +20,7 @@ public class LoadingGame : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (blood<99 && !reset && (!isDone || !isDonePhoton))
+        if (blood<97 && !reset && (!isDone || !isDonePhoton))
         {
             setLoadingGame(false);
             reset = true;

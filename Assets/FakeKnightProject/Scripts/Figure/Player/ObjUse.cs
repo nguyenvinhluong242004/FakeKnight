@@ -13,10 +13,11 @@ public class ObjUse : MonoBehaviour
     [SerializeField] public TMP_Text textGold, textDiamondPurple, canvasTextGold, canvasTextDiamondRed, canvasTextDiamondPurple;
     [SerializeField] public BagContent bagContent;
     [SerializeField] public LoadDataPlayer loadDataPlayer;
-    [SerializeField] public GameObject scanner, scannerFire, scannerFires, center;
+    [SerializeField] public GameObject scanner, scannerFire, scannerFires;
     [SerializeField] public Transform sk1, sk2, sk3, sk4;
     [SerializeField] public Skill _sk1, _sk2, _sk3, _sk4;
     [SerializeField] public PlayerMove player;
     [SerializeField] public ObjectManager objectManager;
     [SerializeField] public DataPlayer dataPlayer;
+    [SerializeField] public MoneyPlayer moneyPlayer;
 }

@@ -1,13 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class EnemyLevel1 : MonoBehaviour
 {
+    [SerializeField] private PhotonView photonView;
     [SerializeField] public float blood;
     [SerializeField] private bool isEfect, isDie, isRandom, isSkill, isChangeConstrains, isChoose, isSK4;
     [SerializeField] private Blood blood_;
     [SerializeField] private GameObject bl;
+    [SerializeField] private GameObject cut;
+    public string Cut = "Cut";
     SpriteRenderer spr;
     Rigidbody2D rb;
     public PlayerMove player;
@@ -45,21 +49,24 @@ public class EnemyLevel1 : MonoBehaviour
                         rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
                         isChangeConstrains = true;
                     }
-                    if (spr.flipX == true && player.transform.position.x > transform.position.x)
-                        spr.flipX = false;
-                    else if (spr.flipX == false && player.transform.position.x < transform.position.x)
-                        spr.flipX = true;
+                    if (spr.flipX && player.transform.position.x > transform.position.x)
+                        photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, false);
+                    else if (!spr.flipX && player.transform.position.x < transform.position.x)
+                        photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, true);
                     if (!bl.activeSelf)
                         bl.SetActive(true);
                     if (!isSkill)
                     {
-                        anm.Play("skill");
+                        if (spr.flipX)
+                            cut = PhotonNetwork.Instantiate(this.Cut, transform.position - new Vector3(0.4f, 0, 0), Quaternion.identity);
+                        else
+                            cut = PhotonNetwork.Instantiate(this.Cut, transform.position + new Vector3(0.4f, 0, 0), Quaternion.Euler(0, 0, 180f));
                         isSkill = true;
                         Invoke("resetSkill", 1f);
                     }
                     if (player.isSkill)
                     {
-                        if (player.number == 0 && player.oneSkill)
+                        if (player.oneSkill)
                         {
                             if (player.isU)
                             {
@@ -155,7 +162,7 @@ public class EnemyLevel1 : MonoBehaviour
                     Vector2 direction = targetPos - currentPos;
                     if (direction.magnitude > 7f)
                     {
-                        anm.Play("idle");
+                        photonView.RPC("PlayAnimation", RpcTarget.All, "idle");
                         isChoose = false;
                         bl.SetActive(false);
                     }
@@ -164,22 +171,22 @@ public class EnemyLevel1 : MonoBehaviour
                         // Giới hạn độ dài của vectơ hướng thành 1
                         direction = Vector2.ClampMagnitude(direction, 1f);
                         if (direction.x < 0)
-                            spr.flipX = true;
+                            photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, true);
                         else
-                            spr.flipX = false;
+                            photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, false);
                         // Di chuyển quái vật theo vectơ hướng với tốc độ đã đặt
                         transform.position = Vector2.MoveTowards(currentPos, currentPos + direction, 1f * Time.deltaTime);
-                        anm.Play("run");
+                        photonView.RPC("PlayAnimation", RpcTarget.All, "run");
                     }
                 }
                 else if (!isRandom)
                 {
                     rb.velocity = Vector2.ClampMagnitude(new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)), 1f);
                     if (rb.velocity.x < 0)
-                        spr.flipX = true;
+                        photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, true);
                     else
-                        spr.flipX = false;
-                    anm.Play("run");
+                        photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, false);
+                    photonView.RPC("PlayAnimation", RpcTarget.All, "run");
                     isRandom = true;
                     Invoke("resetMove", 3f);
                 }
@@ -189,7 +196,7 @@ public class EnemyLevel1 : MonoBehaviour
         if (!isDie && blood <= 0f)
         {
             isDie = true;
-            anm.Play("dealth");
+            photonView.RPC("PlayAnimation", RpcTarget.All, "dealth");
             Invoke("destroy", 0.7f);
         }
         // xử lí hỏa bạo
@@ -216,7 +223,7 @@ public class EnemyLevel1 : MonoBehaviour
             {
                 isSK4 = true;
                 rb.velocity = new Vector2(0, 0);
-                anm.Play("idle");
+                photonView.RPC("PlayAnimation", RpcTarget.All, "idle");
             }
 
         }
@@ -227,7 +234,10 @@ public class EnemyLevel1 : MonoBehaviour
     }
     void resetSkill()
     {
-        anm.Play("idle");
+        if (GetComponent<PhotonView>().IsMine || PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.Destroy(cut);
+        }
         player.playerImpact.setBlood(1f);
         Invoke("resteTimeSkill", 2.4f);
     }    
@@ -238,7 +248,7 @@ public class EnemyLevel1 : MonoBehaviour
     void resetMove()
     {
         rb.velocity = new Vector2(0, 0);
-        anm.Play("idle");
+        photonView.RPC("PlayAnimation", RpcTarget.All, "idle");
         Invoke("resetRandom", 1f);
     }    
     void resetRandom()
@@ -278,5 +288,15 @@ public class EnemyLevel1 : MonoBehaviour
             bl.SetActive(true);
         blood -= 10f;
         blood_.setBlood(blood);
-    }    
+    }
+    [PunRPC]
+    void PlayAnimation(string animationName)
+    {
+        anm.Play(animationName);
+    }
+    [PunRPC]
+    void SyncFlipX(bool flipState)
+    {
+        spr.flipX = flipState;
+    }
 }

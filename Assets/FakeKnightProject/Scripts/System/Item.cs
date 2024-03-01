@@ -68,8 +68,8 @@ public class Item : MonoBehaviour
         // Kiểm tra xem objectManager.item có đang là null hay không
         if (objectManager.item != null)
         {
-            Debug.Log(objectManager.moneyPlayer);
-            if (!objectManager.moneyPlayer.isEnough(
+            Debug.Log(objectManager.objUse.moneyPlayer);
+            if (!objectManager.objUse.moneyPlayer.isEnough(
                 int.Parse(objectManager.item.price.text),
                 objectManager.item.type,
                 objectManager.item.shop,

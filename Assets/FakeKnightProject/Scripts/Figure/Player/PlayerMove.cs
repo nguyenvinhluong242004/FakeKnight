@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using TMPro;
 
 public class PlayerMove : MonoBehaviour
 {
+    [SerializeField] public TMP_Text textName;
     [SerializeField] private UseSkill useSkill;
     [SerializeField] private AnmPlayer anmPlayer;
     [SerializeField] public Animator anm;
     [SerializeField] public Camera mainCamera;
-    [SerializeField] public int number;
+    [SerializeField] public int idPlayer;
     [SerializeField] public SpriteRenderer sprite;
     [SerializeField] public Rigidbody2D rb;
     public float horizontalInput;
@@ -21,7 +23,6 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] public bool isChooseSk1, isChooseSk2, isChooseSk3, isChooseSk4;
     [SerializeField] private Joytick joytick;
     [SerializeField] public PlayerImpact playerImpact;
-    [SerializeField] public GameObject Location, location, Fire, fire, Fires, fires;
     public Vector3 worldPosition;
     Vector3 k, kk;
     public Vector2 velocity_;
@@ -36,13 +37,27 @@ public class PlayerMove : MonoBehaviour
         objUse = FindObjectOfType<ObjUse>();
         if (GetComponent<PhotonView>().IsMine)
         {
+            if (!objUse)
+                objUse = FindObjectOfType<ObjUse>();
             objUse.player = gameObject.GetComponent<PlayerMove>();
             objUse.cam.Follow = gameObject.transform;
-            GetComponent<PhotonView>().RPC("SyncPlayerID", RpcTarget.AllBuffered, number);
+            objUse.moneyPlayer = gameObject.GetComponent<MoneyPlayer>();
         }
         else
-            setPlayer();
+        {
+            Debug.Log(GetComponent<PhotonView>().Owner.NickName + "own");
+            string nickName = GetComponent<PhotonView>().Owner.NickName;
+            string[] parts = nickName.Split('-');
+            if (parts.Length == 2)
+            {
+                string name = parts[0].Trim();
+                int id = int.Parse(parts[1].Trim());
+                textName.text = name;
+                setPlayer(id);
+            }
+        }
         objUse.loadDataPlayer.moneyPlayer = gameObject.GetComponent<MoneyPlayer>();
+        objUse.loadDataPlayer.moneyPlayer.setValue();
         isU = false;
         isD = true;
         isLR = false;
@@ -72,11 +87,17 @@ public class PlayerMove : MonoBehaviour
                     if (t.position.x > Screen.width / 2)
                     {
                         rightTouch = t.fingerId;
-                        if (!oneSkill && touchPos.x > objUse.sk1.position.x - 0.6f && touchPos.x < objUse.sk1.position.x + 0.6f && touchPos.y > objUse.sk1.position.y - 0.6f && touchPos.y < objUse.sk1.position.y + 0.6f)
+                        if (!oneSkill && !isChooseSk1 && touchPos.x > objUse.sk1.position.x - 0.6f && touchPos.x < objUse.sk1.position.x + 0.6f && touchPos.y > objUse.sk1.position.y - 0.6f && touchPos.y < objUse.sk1.position.y + 0.6f)
                         {
                             Debug.Log("use skill 1!");
-                            useSkill.setSkillHero();
+                            // fix late: đang
+                            //useSkill.setSkillHero();
+                            isSkill = true;
+                            oneSkill = true;
                             isChooseSk1 = true;
+                            useSkill.getSkillOne();
+                            objUse._sk1.timeSkill();
+                            objUse._sk1.isOn = true;
                         }
                         else if (!twoSkill && touchPos.x > objUse.sk2.position.x - 0.6f && touchPos.x < objUse.sk2.position.x + 0.6f && touchPos.y > objUse.sk2.position.y - 0.6f && touchPos.y < objUse.sk2.position.y + 0.6f)
                         {
@@ -101,7 +122,7 @@ public class PlayerMove : MonoBehaviour
                             {
                                 isSkill = false;
                                 objUse._sk3.ResetSK();
-                                objUse.scanner.SetActive(false);
+                                objUse.scannerFire.SetActive(false);
                                 isChooseSk3 = false;
                             }
                             else
@@ -117,7 +138,7 @@ public class PlayerMove : MonoBehaviour
                             {
                                 isSkill = false;
                                 objUse._sk4.ResetSK();
-                                objUse.scanner.SetActive(false);
+                                objUse.scannerFires.SetActive(false);
                                 isChooseSk4 = false;
                             }
                             else
@@ -254,20 +275,19 @@ public class PlayerMove : MonoBehaviour
             //mainCamera.transform.position = new Vector3(transform.position.x, transform.position.y, mainCamera.transform.position.z);
         }
     }
-    [PunRPC]
-    void SyncPlayerID(int id)
-    {
-        number = id;
-    }
     Vector2 getTouchPosition(Vector2 touchPosition)
     {
         return mainCamera.ScreenToWorldPoint(new Vector3(touchPosition.x, touchPosition.y, transform.position.z));
     }
-    public void setPlayer()
+    public void setPlayer(int id)
     {
         // set figure
-        Debug.Log(number);
-        objUse.objectManager.imgProfile.sprite = objUse.objectManager.imgPlayers[number];
+        idPlayer = id;
+        Debug.Log(idPlayer);
+        if (!objUse) 
+            objUse = FindObjectOfType<ObjUse>();
+        anm.runtimeAnimatorController = objUse.objectManager.anmPlayers[idPlayer];
+        sprite.sprite = objUse.objectManager.imgPlayers[idPlayer];
         if (GetComponent<PhotonView>().IsMine)
         {
             // get Music, Sound Playerr
@@ -308,5 +328,9 @@ public class PlayerMove : MonoBehaviour
         {
             joytick.choose(false);
         }
+    }
+    public int GetPlayerNumber()
+    {
+        return idPlayer;
     }
 }
