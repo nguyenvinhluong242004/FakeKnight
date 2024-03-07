@@ -95,6 +95,9 @@ TagManager:
   - name: Terrain1_3_TanCay3
     uniqueID: 2756836029
     locked: 0
+  - name: skill
+    uniqueID: 399913803
+    locked: 0
   - name: Canvas
     uniqueID: 2913252125
     locked: 0

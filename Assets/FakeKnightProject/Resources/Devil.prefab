@@ -222,7 +222,10 @@ MonoBehaviour:
   bl: {fileID: 6041314978999830378}
   cut: {fileID: 0}
   Cut: Cut
+  spr: {fileID: 6041314979540049399}
+  rb: {fileID: 6041314979540049388}
   player: {fileID: 0}
+  anm: {fileID: 6041314979540049398}
 --- !u!50 &6041314979540049388
 Rigidbody2D:
   serializedVersion: 4

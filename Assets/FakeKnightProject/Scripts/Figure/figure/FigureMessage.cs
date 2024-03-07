@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Photon.Pun;
 
 public class FigureMessage : MonoBehaviour
 {
+    [SerializeField] private PhotonView photonView;
+    [SerializeField] private Animator anm;
     [SerializeField] private string nameFigure;
     public TMP_Text message;
     ObjectManager objectManager;
@@ -19,6 +22,7 @@ public class FigureMessage : MonoBehaviour
     void Start()
     {
         objectManager = FindObjectOfType<ObjectManager>();
+        photonView.RPC("PlayAnimation", RpcTarget.All, "idle");
     }
 
     // Update is called once per frame
@@ -36,6 +40,8 @@ public class FigureMessage : MonoBehaviour
                 }
                 else
                 {
+                    if (!objectManager)
+                        objectManager = FindObjectOfType<ObjectManager>();
                     objectManager.message.SetActive(false);
                 }
 
@@ -58,5 +64,10 @@ public class FigureMessage : MonoBehaviour
                 idx = 1;
             }
         }
+    }
+    [PunRPC]
+    void PlayAnimation(string animationName)
+    {
+        anm.Play(animationName);
     }
 }

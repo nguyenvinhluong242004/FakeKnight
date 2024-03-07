@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class Guards : MonoBehaviour
 {
+    [SerializeField] private PhotonView photonView;
     [SerializeField] private Animator anm;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private SpriteRenderer spr;
@@ -31,8 +33,8 @@ public class Guards : MonoBehaviour
                     rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
                     isStart = true;
                     transform.position = po;
-                    spr.flipX = isL;
-                    anm.Play("idle");
+                    photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, isL);
+                    photonView.RPC("PlayAnimation", RpcTarget.All, "idle");
                 }
             }
         } 
@@ -54,19 +56,19 @@ public class Guards : MonoBehaviour
         Vector2 direction = targetPos - currentPos;
         if (direction.magnitude > 3f)
         {
-            anm.Play("idle");
+            photonView.RPC("PlayAnimation", RpcTarget.All, "idle");
         }
         else
         {
             // Giới hạn độ dài của vectơ hướng thành 1
             direction = Vector2.ClampMagnitude(direction, 1f);
             if (direction.x < 0)
-                spr.flipX = true;
+                photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, true);
             else
-                spr.flipX = false;
+                photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, false);
             // Di chuyển lính canh theo vectơ hướng với tốc độ đã đặt
             transform.position = Vector2.MoveTowards(currentPos, currentPos + direction, 1f * Time.deltaTime);
-            anm.Play("run");
+            photonView.RPC("PlayAnimation", RpcTarget.All, "run");
         }
     }
     void OnTriggerEnter2D(Collider2D collision)
@@ -97,7 +99,7 @@ public class Guards : MonoBehaviour
         if(isOn && collision.gameObject.CompareTag("Enemy"))
         {
             isSkill = true;
-            anm.Play("skill");
+            photonView.RPC("PlayAnimation", RpcTarget.All, "skill");
             if (enemy)
                 enemy.GetComponent<EnemyLevel1>().blood = -0.1f;
             Invoke("reset", 0.5f);
@@ -108,5 +110,15 @@ public class Guards : MonoBehaviour
         enemy = null;
         isOn = false;
         isSkill = false;
+    }
+    [PunRPC]
+    void PlayAnimation(string animationName)
+    {
+        anm.Play(animationName);
+    }
+    [PunRPC]
+    void SyncFlipX(bool flipState)
+    {
+        spr.flipX = flipState;
     }
 }

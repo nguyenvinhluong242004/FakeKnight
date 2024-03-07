@@ -12,17 +12,13 @@ public class EnemyLevel1 : MonoBehaviour
     [SerializeField] private GameObject bl;
     [SerializeField] private GameObject cut;
     public string Cut = "Cut";
-    SpriteRenderer spr;
-    Rigidbody2D rb;
+    [SerializeField] private SpriteRenderer spr;
+    [SerializeField] private Rigidbody2D rb;
     public PlayerMove player;
-    Animator anm;
+    [SerializeField] private Animator anm;
     // Start is called before the first frame update
     void Start()
     {
-        player = FindObjectOfType<PlayerMove>();
-        anm = GetComponent<Animator>();
-        spr = GetComponent<SpriteRenderer>();
-        rb = GetComponent<Rigidbody2D>();
         isEfect = false;
         isDie = false;
         isRandom = false;
@@ -76,8 +72,7 @@ public class EnemyLevel1 : MonoBehaviour
                                     {
                                         Debug.Log("hitU");
                                         player.oneSkill = false;
-                                        blood -= 3f;
-                                        blood_.setBlood(blood);
+                                        photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
                                         isChoose = true;
                                     }
                                 }
@@ -90,8 +85,7 @@ public class EnemyLevel1 : MonoBehaviour
                                     {
                                         Debug.Log("hitD");
                                         player.oneSkill = false;
-                                        blood -= 3f;
-                                        blood_.setBlood(blood);
+                                        photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
                                         isChoose = true;
                                     }
                                 }
@@ -102,8 +96,7 @@ public class EnemyLevel1 : MonoBehaviour
                                 {
                                     Debug.Log("hitL");
                                     player.oneSkill = false;
-                                    blood -= 3f;
-                                    blood_.setBlood(blood);
+                                    photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
                                     isChoose = true;
                                 }
                             }
@@ -113,8 +106,7 @@ public class EnemyLevel1 : MonoBehaviour
                                 {
                                     Debug.Log("hitR");
                                     player.oneSkill = false;
-                                    blood -= 3f;
-                                    blood_.setBlood(blood);
+                                    photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
                                     isChoose = true;
 
                                 }
@@ -132,16 +124,11 @@ public class EnemyLevel1 : MonoBehaviour
                                 Debug.Log("trung chieu 2");
                                 isChoose = true;
                                 player.twoSkill = false;
-                                blood -= 12f;
-                                blood_.setBlood(blood);
+                                photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 12f);
                             }
 
                         }
                     }
-                }
-                else
-                {
-                    player = FindObjectOfType<PlayerMove>();
                 }
             }
             else if (!isDie)
@@ -210,8 +197,7 @@ public class EnemyLevel1 : MonoBehaviour
                 Debug.Log("trung chieu 3");
                 isChoose = true;
                 player.threeSkill = false;
-                blood -= 20f;
-                blood_.setBlood(blood);
+                photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 20f);
             }
 
         }
@@ -238,7 +224,9 @@ public class EnemyLevel1 : MonoBehaviour
         {
             PhotonNetwork.Destroy(cut);
         }
-        player.playerImpact.setBlood(1f);
+        // xử lí vấn đề all player bị mất máu
+        if (GetComponent<PhotonView>().IsMine)
+            player.playerImpact.setBlood(1f);
         Invoke("resteTimeSkill", 2.4f);
     }    
     void resteTimeSkill()
@@ -258,18 +246,18 @@ public class EnemyLevel1 : MonoBehaviour
     void destroy()
     {
         gameObject.SetActive(false);
-        Destroy(gameObject);
+        PhotonNetwork.Destroy(gameObject);
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
             isEfect = true;
+            player = collision.gameObject.GetComponent<PlayerMove>();
         }    
         if(collision.gameObject.CompareTag("arrow"))
         {
-            blood -= 3f;
-            blood_.setBlood(blood);
+            photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
             isChoose = true;
         }
     }
@@ -286,8 +274,7 @@ public class EnemyLevel1 : MonoBehaviour
     {
         if (!bl.activeSelf)
             bl.SetActive(true);
-        blood -= 10f;
-        blood_.setBlood(blood);
+        photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 10f);
     }
     [PunRPC]
     void PlayAnimation(string animationName)
@@ -298,5 +285,11 @@ public class EnemyLevel1 : MonoBehaviour
     void SyncFlipX(bool flipState)
     {
         spr.flipX = flipState;
+    }
+    [PunRPC]
+    void UpdateBloodRPC(float k)
+    {
+        blood -= k;
+        blood_.setBlood(blood);
     }
 }

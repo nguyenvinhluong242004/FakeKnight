@@ -290,7 +290,10 @@ MonoBehaviour:
   bl: {fileID: 7735266255668628773}
   cut: {fileID: 0}
   Cut: Cut
+  spr: {fileID: 7735266255712389569}
+  rb: {fileID: 7735266255712389572}
   player: {fileID: 0}
+  anm: {fileID: 7735266255712389568}
 --- !u!58 &7735266255712389571
 CircleCollider2D:
   m_ObjectHideFlags: 0

@@ -20,4 +20,5 @@ public class ObjUse : MonoBehaviour
     [SerializeField] public ObjectManager objectManager;
     [SerializeField] public DataPlayer dataPlayer;
     [SerializeField] public MoneyPlayer moneyPlayer;
+    [SerializeField] public TMP_Text messageOldMan;
 }

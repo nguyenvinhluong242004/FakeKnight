@@ -8,11 +8,13 @@ using Photon.Realtime;
 
 public class PhotonManager : MonoBehaviourPunCallbacks
 {
+    [SerializeField] private DataUseLoadGame dataUseLoadGame; // script table object
     [SerializeField] private LoadDataPlayer loadDataPlayer;
     [SerializeField] private ObjUse objUse;
     [SerializeField] private ObjectManager objectManager;
     [SerializeField] private LoadingGame loadingGame;
     [SerializeField] public string playerName, nameServer;
+    [SerializeField] public int idServer;
     //public UiRoomProfile roomPrefab;
     public List<RoomInfo> updatedRooms;
     public List<NameServer> servers = new List<NameServer>();
@@ -21,6 +23,10 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public static PhotonManager instance;
     public string photonPlayer = "Player";
     public string photonSlime = "Slime";
+    public string photonDevil = "Devil";
+    public string photonOldMan = "OldMan";
+    public string photonGuardsL = "GuardsL";
+    public string photonGuardsR = "GuardsR";
     public List<PlayerProfile> players = new List<PlayerProfile>();
     private void Start()
     {
@@ -72,8 +78,36 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public override void OnCreatedRoom()
     {
         Debug.Log("OnCreatedRoom");
-
-        GameObject p = PhotonNetwork.Instantiate(this.photonSlime, Vector3.zero, Quaternion.identity);
+        //dataUseLoadGame.add(nameServer);
+        idServer = dataUseLoadGame.getIdServer(nameServer);
+        // load enemy and NPC
+        if (idServer >= 0)
+        {
+            foreach (Vector3 _po in dataUseLoadGame.ServersData[idServer].dataInServers.enemySlimePositions)
+            {
+                GameObject p = PhotonNetwork.Instantiate(this.photonSlime, _po, Quaternion.identity);
+            }
+            foreach (Vector3 _po in dataUseLoadGame.ServersData[idServer].dataInServers.enemyDevilPositions)
+            {
+                GameObject p = PhotonNetwork.Instantiate(this.photonDevil, _po, Quaternion.identity);
+            }
+            foreach (Vector3 _po in dataUseLoadGame.ServersData[idServer].dataInServers.NPCPositions)
+            {
+                GameObject p = PhotonNetwork.Instantiate(this.photonOldMan, _po, Quaternion.identity);
+                p.GetComponent<FigureMessage>().message = objUse.messageOldMan;
+            }
+            foreach (Vector3 _po in dataUseLoadGame.ServersData[idServer].dataInServers.NPCKillPositionsL)
+            {
+                GameObject p = PhotonNetwork.Instantiate(this.photonGuardsL, _po, Quaternion.identity);
+            }
+            foreach (Vector3 _po in dataUseLoadGame.ServersData[idServer].dataInServers.NPCKillPositionsR)
+            {
+                GameObject p = PhotonNetwork.Instantiate(this.photonGuardsR, _po, Quaternion.identity);
+            }
+            //dataUseLoadGame.ServersData[idServer].dataInServers.enemySlimePositions[0] = new Vector3(0, 0, 0);
+        }    
+        
+        //Update data in server // update sau
         //loadingGame.isDonePhoton = true;
         //if (loadingGame.isDone && loadingGame.isDonePhoton)
         //    loadingGame.setLoadingGame(true);
@@ -117,7 +151,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            Debug.Log("kkkkkkk");
+            Debug.Log("kkkkkkk" + servers[0]);
             Join();
             //SpawnPlayer();
             //loadingGame.isDonePhoton = true;
