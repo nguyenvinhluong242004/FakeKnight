@@ -5,7 +5,8 @@ using UnityEngine;
 public class Fire : MonoBehaviour
 {
     [SerializeField] private Animator anm;
-    [SerializeField] public bool isOn, isAwake;
+    [SerializeField] public bool isOn;
+    [SerializeField] public bool isAwake;
     [SerializeField] private Vector3 velocity;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private float time;

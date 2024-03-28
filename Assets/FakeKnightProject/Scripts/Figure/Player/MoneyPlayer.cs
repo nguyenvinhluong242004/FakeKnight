@@ -6,41 +6,38 @@ using TMPro;
 
 public class MoneyPlayer : MonoBehaviour
 {
-    [SerializeField] private int gold, diamondRed, diamondPurple; // type: 0, 1, 2
-    [SerializeField] private ObjUse objUse;
+    [SerializeField] private int gold; // type: 0, 1, 2
+    [SerializeField] private int diamondRed;
+    [SerializeField] private int diamondPurple; 
     void Start()
     {
-        objUse = FindObjectOfType<ObjUse>();
+
     }
     public void setValue()
     {
-        Debug.Log(objUse);
-        if (!objUse)
-            objUse = FindObjectOfType<ObjUse>();
-        gold = objUse.loadDataPlayer.dataPlayer.gold;
-        diamondPurple = objUse.loadDataPlayer.dataPlayer.diamondPurple;
-        diamondRed = objUse.loadDataPlayer.dataPlayer.diamondRed;
-        objUse.textGold.text = gold.ToString();
-        objUse.textDiamondPurple.text = diamondPurple.ToString();
-        objUse.canvasTextGold.text = gold.ToString();
-        objUse.canvasTextDiamondRed.text = diamondRed.ToString();
-        objUse.canvasTextDiamondPurple.text = diamondPurple.ToString();
+        Debug.Log(ObjUse.instance);
+        gold = LoadDataPlayer.instance.dataPlayer.gold;
+        diamondPurple = LoadDataPlayer.instance.dataPlayer.diamondPurple;
+        diamondRed = LoadDataPlayer.instance.dataPlayer.diamondRed;
+        ObjUse.instance.textGold.text = gold.ToString();
+        ObjUse.instance.textDiamondPurple.text = diamondPurple.ToString();
+        ObjUse.instance.canvasTextGold.text = gold.ToString();
+        ObjUse.instance.canvasTextDiamondRed.text = diamondRed.ToString();
+        ObjUse.instance.canvasTextDiamondPurple.text = diamondPurple.ToString();
     }
     public bool isEnough(int price, int type, int shop, int key, Sprite img)
     {
         Debug.Log("money");
         if (diamondPurple >= price)
         {
-            Debug.Log(objUse);
-            if (!objUse)
-                objUse = FindObjectOfType<ObjUse>();
-            objUse.loadDataPlayer.dataPlayer.diamondPurple -= price;
+            Debug.Log(ObjUse.instance);
+            LoadDataPlayer.instance.dataPlayer.diamondPurple -= price;
             diamondPurple -= price;
-            objUse.textDiamondPurple.text = diamondPurple.ToString();
-            objUse.canvasTextDiamondPurple.text = diamondPurple.ToString();
-            objUse.bagContent.initBagItem(shop, key, 1, type, img);
-            Debug.Log(objUse.loadDataPlayer);
-            objUse.loadDataPlayer.setCountItem(shop, key, true);
+            ObjUse.instance.textDiamondPurple.text = diamondPurple.ToString();
+            ObjUse.instance.canvasTextDiamondPurple.text = diamondPurple.ToString();
+            ObjUse.instance.bagContent.initBagItem(shop, key, 1, type, img);
+            Debug.Log(LoadDataPlayer.instance);
+            LoadDataPlayer.instance.setCountItem(shop, key, true);
             return true;
         }
         return false;

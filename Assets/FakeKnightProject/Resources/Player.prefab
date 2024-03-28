@@ -259,6 +259,7 @@ GameObject:
   - component: {fileID: 7711364724075678747}
   - component: {fileID: 730917557501371439}
   - component: {fileID: 1698037414553473141}
+  - component: {fileID: 445056046466812273}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -404,6 +405,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08c0010f3bccd304c93eb6df5e71613a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerNameID: {fileID: 445056046466812273}
   textName: {fileID: 8296249482627214959}
   useSkill: {fileID: 2028688186516339963}
   anmPlayer: {fileID: 7129804613083885926}
@@ -414,7 +416,7 @@ MonoBehaviour:
   rb: {fileID: 8292724178290465497}
   horizontalInput: 0
   verticalInput: 0
-  speed: 2.4
+  speed: 3
   isSetLocation: 0
   isSetFire: 0
   isFlag: 0
@@ -437,7 +439,6 @@ MonoBehaviour:
   worldPosition: {x: 0, y: 0, z: 0}
   velocity_: {x: 0, y: 0}
   pastPlayer: {x: 0, y: 0, z: 0}
-  objUse: {fileID: 0}
 --- !u!114 &4438624638867121575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -453,7 +454,6 @@ MonoBehaviour:
   gold: 100
   diamondRed: 0
   diamondPurple: 2000
-  objUse: {fileID: 0}
 --- !u!114 &6366045903175908897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,7 +467,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTick: 0
-  objUse: {fileID: 0}
 --- !u!114 &6773483602744867977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -482,7 +481,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blood: 0
   energy: 0
-  objUse: {fileID: 0}
+  percentResistance: 0
+  percentSpeed: 0
+  percentDamage: 0
+  heals: 0
+  isHealing: 0
 --- !u!114 &2028688186516339963
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -613,3 +616,17 @@ MonoBehaviour:
   m_SynchronizeAngularVelocity: 1
   m_TeleportEnabled: 1
   m_TeleportIfDistanceGreaterThan: 3
+--- !u!114 &445056046466812273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8030679365161212202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c28a15840839eac43b4475aecdd4a30d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nickName: 
+  playfabID: 

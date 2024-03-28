@@ -3,22 +3,42 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Cinemachine;
+using Photon.Pun;
 
 public class ObjUse : MonoBehaviour
 {
+    [SerializeField] public static ObjUse instance;
+    [SerializeField] public PhotonView targetPhotonView;
     [SerializeField] public CinemachineVirtualCamera cam;
     [SerializeField] public RectTransform sta, bgSta;
-    [SerializeField] public Blood _blood, _energy;
+    [SerializeField] public Blood _blood;
+    [SerializeField] public Blood _energy;
     [SerializeField] public TMP_Text bl, ene;
-    [SerializeField] public TMP_Text textGold, textDiamondPurple, canvasTextGold, canvasTextDiamondRed, canvasTextDiamondPurple;
+    [SerializeField] public TMP_Text textGold;
+    [SerializeField] public TMP_Text textDiamondPurple;
+    [SerializeField] public TMP_Text canvasTextGold;
+    [SerializeField] public TMP_Text canvasTextDiamondRed;
+    [SerializeField] public TMP_Text canvasTextDiamondPurple;
     [SerializeField] public BagContent bagContent;
-    [SerializeField] public LoadDataPlayer loadDataPlayer;
-    [SerializeField] public GameObject scanner, scannerFire, scannerFires;
-    [SerializeField] public Transform sk1, sk2, sk3, sk4;
-    [SerializeField] public Skill _sk1, _sk2, _sk3, _sk4;
+    [SerializeField] public GameObject scanner;
+    [SerializeField] public GameObject scannerFire; 
+    [SerializeField] public GameObject scannerFires;
+    [SerializeField] public Transform sk1;
+    [SerializeField] public Transform sk2;
+    [SerializeField] public Transform sk3;
+    [SerializeField] public Transform sk4;
+    [SerializeField] public Skill _sk1;
+    [SerializeField] public Skill _sk2;
+    [SerializeField] public Skill _sk3;
+    [SerializeField] public Skill _sk4;
     [SerializeField] public PlayerMove player;
-    [SerializeField] public ObjectManager objectManager;
+    [SerializeField] public PlayerImpact playerImpact;
     [SerializeField] public DataPlayer dataPlayer;
     [SerializeField] public MoneyPlayer moneyPlayer;
     [SerializeField] public TMP_Text messageOldMan;
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+    }
 }

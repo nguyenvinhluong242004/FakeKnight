@@ -40,7 +40,7 @@ public class PhotonChat : MonoBehaviour
         string nickName = sender.NickName;
         string[] parts = nickName.Split('-');
         string senderName = "";
-        if (parts.Length == 2)
+        if (parts.Length == 3)
         {
             senderName = parts[0].Trim();
             int id = int.Parse(parts[1].Trim());

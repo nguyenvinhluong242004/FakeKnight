@@ -10,7 +10,6 @@ public class FigureMessage : MonoBehaviour
     [SerializeField] private Animator anm;
     [SerializeField] private string nameFigure;
     public TMP_Text message;
-    ObjectManager objectManager;
     string[] messOldman =
     {
         "Go explore new lands. Kill monsters to level up, complete missions to quickly get stronger!",
@@ -21,7 +20,6 @@ public class FigureMessage : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        objectManager = FindObjectOfType<ObjectManager>();
         photonView.RPC("PlayAnimation", RpcTarget.All, "idle");
     }
 
@@ -40,9 +38,7 @@ public class FigureMessage : MonoBehaviour
                 }
                 else
                 {
-                    if (!objectManager)
-                        objectManager = FindObjectOfType<ObjectManager>();
-                    objectManager.message.SetActive(false);
+                    ObjectManager.instance.message.SetActive(false);
                 }
 
             }
@@ -60,7 +56,7 @@ public class FigureMessage : MonoBehaviour
             {
                 isStart = true;
                 message.text = messOldman[0];
-                objectManager.message.SetActive(true);
+                ObjectManager.instance.message.SetActive(true);
                 idx = 1;
             }
         }

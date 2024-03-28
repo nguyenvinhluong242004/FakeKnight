@@ -38,6 +38,7 @@ public class DataGame
 }
 public class DataPlayer : MonoBehaviour
 {
+    [SerializeField] public string PlayFabID;
     public string name;
     public int idPlayer;
     public int lv;

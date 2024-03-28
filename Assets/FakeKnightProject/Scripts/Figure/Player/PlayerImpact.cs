@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -6,33 +6,57 @@ using TMPro;
 public class PlayerImpact : MonoBehaviour
 {
     [SerializeField] public float blood, energy;
-    [SerializeField] private ObjUse objUse;
+    [SerializeField] private float percentResistance; // phần trăm chống chịu
+    [SerializeField] private float percentSpeed;      // phần trăm tốc chạy
+    [SerializeField] private float percentDamage;     // phần trăm sát thương
+    [SerializeField] private float heals;     // Số máu hồi
+    [SerializeField] private bool isHealing;     
     void Start()
     {
-        objUse = FindObjectOfType<ObjUse>();
-        blood = 100f;
+        blood = 1000f;
         energy = 100f;
+        isHealing = false;
+        heals = 50f;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isHealing)
+        {
+            isHealing = false;
+            Invoke("setHealing", 0.1f);
+        }    
         if (Input.GetMouseButtonDown(0))
         {
-            objUse._blood.setBlood(blood);
-            objUse._energy.setBlood(energy);
+            ObjUse.instance._blood.setBlood(blood);
+            ObjUse.instance._energy.setBlood(energy);
         }
+    }
+    void setHealing()
+    {
+        if (heals <= 0f)
+            return;
+        heals -= 5f;
+        blood += 5f;
+        setBlood(0f);
+        isHealing = true;
+    }    
+    public void setIsHealing()
+    {
+        isHealing = true;
+        heals = 50f;
     }
     public void setBlood(float k)
     {
         blood -= k;
-        objUse._blood.setBlood(blood);
-        objUse.bl.text = $"{blood} / 100";
+        ObjUse.instance._blood.setBlood(ObjUse.instance.playerImpact.blood);
+        ObjUse.instance.bl.text = $"{ObjUse.instance.playerImpact.blood} / 1000";
     }
     public void setEnergy(float k)
     {
         energy -= k;
-        objUse._energy.setBlood(energy);
-        objUse.ene.text = $"{blood} / 100";
+        ObjUse.instance._energy.setBlood(energy);
+        ObjUse.instance.ene.text = $"{blood} / 100";
     }
 }

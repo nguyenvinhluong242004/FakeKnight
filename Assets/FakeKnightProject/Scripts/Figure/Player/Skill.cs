@@ -13,10 +13,8 @@ public class Skill : MonoBehaviour
     float elapsedTime;
     [SerializeField] private float totalTime;
     [SerializeField] private int sk;
-    [SerializeField] private ObjUse objUse;
     void Start()
     {
-        objUse = FindObjectOfType<ObjUse>();
         isOn = false;
         cir.SetActive(false);
     }
@@ -39,14 +37,14 @@ public class Skill : MonoBehaviour
                 if (sk == 1)
                 {
                     Debug.Log("reset");
-                    objUse.player.isChooseSk1 = false;
+                    ObjUse.instance.player.isChooseSk1 = false;
                 }    
                 else if(sk == 2)
-                    objUse.player.twoSkill = false;
+                    ObjUse.instance.player.twoSkill = false;
                 else if (sk == 3)
-                    objUse.player.threeSkill = false;
+                    ObjUse.instance.player.threeSkill = false;
                 else if (sk == 4)
-                    objUse.player.fourSkill = false;
+                    ObjUse.instance.player.fourSkill = false;
             }
         }
     }

@@ -1,13 +1,13 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Blood : MonoBehaviour
 {
-    public GameObject blBGR, bl;
-    [SerializeField] float limitBl;
-    [SerializeField] float po;
-    public void setBlood(float blood)
+    public GameObject blBGR, bl; // object lấy vị trí
+    [SerializeField] float limitBl; // máu tối ta
+    [SerializeField] float po; // 1 lượng để căn cho máu luôn ở trong khuôn 
+    public void setBlood(float blood) 
     {
         float k = blood / limitBl;
         if (k < 0f)

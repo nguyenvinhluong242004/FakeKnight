@@ -6,28 +6,27 @@ using TMPro;
 
 public class BagItem : MonoBehaviour
 {
+    [SerializeField] public ItemManager itemManager;
     [SerializeField] public int shop;
     [SerializeField] public int key;
     [SerializeField] public int type;
     [SerializeField] public Image img;
     [SerializeField] public TMP_Text count;
-    [SerializeField] private ObjectManager objectManager;
     [SerializeField] public BagItem bagItem;
     [SerializeField] public BagContent bagContent;
-    [SerializeField] private LoadDataPlayer loadDataPlayer;
     [SerializeField] public GameObject add; // only INFOR player have
     [SerializeField] public int idx; // only INFOR player have
     public bool isUse = false;
     // Start is called before the first frame update
     void Start()
     {
-        objectManager = FindObjectOfType<ObjectManager>();
+        itemManager = FindObjectOfType<ItemManager>();
         if (add) // if bagItem on INFOR
         {
-            int idx_ = loadDataPlayer.dataPlayer.equipments[idx];
+            int idx_ = LoadDataPlayer.instance.dataPlayer.equipments[idx];
             if (idx_ != -1)
             {
-                gameObject.GetComponent<Image>().sprite = objectManager.imagesS1[idx_];
+                gameObject.GetComponent<Image>().sprite = ObjectManager.instance.imagesS1[idx_];
                 shop = 0;
                 key = idx_;
                 type = 0;
@@ -48,7 +47,7 @@ public class BagItem : MonoBehaviour
                     bagItem.key = key;
                     bagItem.type = type;
                     bagItem.count.text = "0";
-                    bagItem.img.sprite = objectManager.imagesS1[idx_];
+                    bagItem.img.sprite = ObjectManager.instance.imagesS1[idx_];
                     Destroy(k);
                 }
                 img = bagItem.img;
@@ -61,32 +60,32 @@ public class BagItem : MonoBehaviour
     }
     public void chooseItem()
     {
-        if (objectManager.bagItem && shop == objectManager.bagItem.shop && key == objectManager.bagItem.key)
+        if (ObjectManager.instance.bagItem && shop == ObjectManager.instance.bagItem.shop && key == ObjectManager.instance.bagItem.key)
         {
-            objectManager.bagItem.GetComponent<Image>().color = new Color(1f, 1f, 0.5f, 0.5f);
-            objectManager.isSetItem = false;
-            objectManager.bagItem = null;
+            ObjectManager.instance.bagItem.GetComponent<Image>().color = new Color(1f, 1f, 0.5f, 0.5f);
+            ObjectManager.instance.isSetItem = false;
+            ObjectManager.instance.bagItem = null;
         }
         else
         {
-            if (objectManager.bagItem)
-                objectManager.bagItem.GetComponent<Image>().color = new Color(1f, 1f, 0.5f, 0.5f);
-            objectManager.isSetItem = true;
-            objectManager.bagItem = gameObject.GetComponent<BagItem>();
-            objectManager.bagItem.GetComponent<Image>().color = new Color(1f, 1f, 0.5f, 1f);
+            if (ObjectManager.instance.bagItem)
+                ObjectManager.instance.bagItem.GetComponent<Image>().color = new Color(1f, 1f, 0.5f, 0.5f);
+            ObjectManager.instance.isSetItem = true;
+            ObjectManager.instance.bagItem = gameObject.GetComponent<BagItem>();
+            ObjectManager.instance.bagItem.GetComponent<Image>().color = new Color(1f, 1f, 0.5f, 1f);
         }    
-        //Debug.Log(objectManager.bagItem.img.sprite);
+        //Debug.Log(ObjectManager.instance.bagItem.img.sprite);
     }
     public void setEquiment()
     {
-        if (objectManager.isSetItem)
+        if (ObjectManager.instance.isSetItem)
         {
-            if (objectManager.bagItem.type == 0)
+            if (ObjectManager.instance.bagItem.type == 0)
             {
                 Debug.Log("setEquip");
                 bool check = false;
                 for (int i=0; i<8; i++)
-                    if (loadDataPlayer.dataPlayer.equipments[i] == objectManager.bagItem.key)
+                    if (LoadDataPlayer.instance.dataPlayer.equipments[i] == ObjectManager.instance.bagItem.key)
                     {
                         check = true;
                         break;
@@ -94,13 +93,13 @@ public class BagItem : MonoBehaviour
                 if (!check)
                 {
                     Debug.Log("khoongg trunggf");
-                    //Debug.Log(objectManager.bagItem.img.sprite);
-                    gameObject.GetComponent<Image>().sprite = objectManager.bagItem.img.sprite;
-                    objectManager.bagItem.GetComponent<Image>().color = new Color(1f, 1f, 0.5f, 0.5f);
-                    shop = objectManager.bagItem.shop;
-                    key = objectManager.bagItem.key;
-                    type = objectManager.bagItem.type;
-                    img = objectManager.bagItem.img;
+                    //Debug.Log(ObjectManager.instance.bagItem.img.sprite);
+                    gameObject.GetComponent<Image>().sprite = ObjectManager.instance.bagItem.img.sprite;
+                    ObjectManager.instance.bagItem.GetComponent<Image>().color = new Color(1f, 1f, 0.5f, 0.5f);
+                    shop = ObjectManager.instance.bagItem.shop;
+                    key = ObjectManager.instance.bagItem.key;
+                    type = ObjectManager.instance.bagItem.type;
+                    img = ObjectManager.instance.bagItem.img;
 
                     if (isUse)
                     {
@@ -114,7 +113,7 @@ public class BagItem : MonoBehaviour
                         //foreach (GameObject a in bagContent.itemBag) 
                         //{
                         //    BagItem b = a.GetComponent<BagItem>();
-                        //    if (b.shop == 0 && b.key == loadDataPlayer.dataPlayer.equipments[idx])
+                        //    if (b.shop == 0 && b.key == LoadDataPlayer.instance.dataPlayer.equipments[idx])
                         //    {
                         //        bagItem = b;
                         //        break;
@@ -133,20 +132,21 @@ public class BagItem : MonoBehaviour
                             bagContent.initBagItem(bagItem.shop, bagItem.key, 1, type, bagItem.img.sprite);
                         }
                     }
-                    int _count = int.Parse(objectManager.bagItem.count.text);
-                    objectManager.bagItem.count.text = $"{_count - 1}";
+                    int _count = int.Parse(ObjectManager.instance.bagItem.count.text);
+                    ObjectManager.instance.bagItem.count.text = $"{_count - 1}";
                     if (_count - 1 == 0)
                     {
                         if (bagContent == null)
                             bagContent = FindObjectOfType<BagContent>();
-                        bagContent.resetBagItem(objectManager.bagItem.shop, objectManager.bagItem.key);
+                        bagContent.resetBagItem(ObjectManager.instance.bagItem.shop, ObjectManager.instance.bagItem.key);
                         add.SetActive(true);
                     }
-                    bagItem = objectManager.bagItem;
+                    bagItem = ObjectManager.instance.bagItem;
                     isUse = true;
-                    objectManager.isSetItem = false;
-                    objectManager.loadDataPlayer.dataPlayer.equipments[idx] = key;
-                    objectManager.loadDataPlayer.SaveDataGamePlayer();
+                    ObjectManager.instance.isSetItem = false;
+                    ObjectManager.instance.bagItem = null;
+                    LoadDataPlayer.instance.dataPlayer.equipments[idx] = key;
+                    LoadDataPlayer.instance.SaveDataGamePlayer();
                     saveEquimentForPlayer();
                     add.SetActive(false);
                 }    
@@ -154,14 +154,14 @@ public class BagItem : MonoBehaviour
         }
         else if (!isUse)
         {
-            objectManager.bag.SetActive(true);
+            ObjectManager.instance.bag.SetActive(true);
         }
         else if (isUse)
         {
-            objectManager.removeEquip.SetActive(true);
-            objectManager.bagItem = gameObject.GetComponent<BagItem>();
-            objectManager.equip = gameObject;
-            //Debug.Log(objectManager.bagItem.img.sprite);
+            ObjectManager.instance.removeEquip.SetActive(true);
+            ObjectManager.instance.bagItem = gameObject.GetComponent<BagItem>();
+            ObjectManager.instance.equip = gameObject;
+            //Debug.Log(ObjectManager.instance.bagItem.img.sprite);
         }
     }
     void saveEquimentForPlayer()
@@ -173,17 +173,17 @@ public class BagItem : MonoBehaviour
     }
     public void setItem()
     {
-        if (objectManager.isSetItem)
+        if (ObjectManager.instance.isSetItem)
         {
-            if (objectManager.bagItem.type != 0)
+            if (ObjectManager.instance.bagItem.type != 0)
             {
-                //Debug.Log(objectManager.bagItem.img.sprite);
-                gameObject.GetComponent<Image>().sprite = objectManager.bagItem.img.sprite;
-                objectManager.bagItem.GetComponent<Image>().color = new Color(1f, 1f, 0.5f, 0.5f);
-                shop = objectManager.bagItem.shop;
-                key = objectManager.bagItem.key;
-                type = objectManager.bagItem.type;
-                img = objectManager.bagItem.img;
+                //Debug.Log(ObjectManager.instance.bagItem.img.sprite);
+                gameObject.GetComponent<Image>().sprite = ObjectManager.instance.bagItem.img.sprite;
+                ObjectManager.instance.bagItem.GetComponent<Image>().color = new Color(1f, 1f, 0.5f, 0.5f);
+                shop = ObjectManager.instance.bagItem.shop;
+                key = ObjectManager.instance.bagItem.key;
+                type = ObjectManager.instance.bagItem.type;
+                img = ObjectManager.instance.bagItem.img;
                 if (isUse)
                 {
                     Debug.Log("isuse");
@@ -196,27 +196,31 @@ public class BagItem : MonoBehaviour
                         bagContent.initBagItem(bagItem.shop, bagItem.key, 1, type, bagItem.img.sprite);
                     }
                 }
-                int _count = int.Parse(objectManager.bagItem.count.text);
-                objectManager.bagItem.count.text = $"{_count - 1}";
+                int _count = int.Parse(ObjectManager.instance.bagItem.count.text);
+                ObjectManager.instance.bagItem.count.text = $"{_count - 1}";
                 if (_count - 1 == 0)
                 {
                     if (bagContent == null)
                         bagContent = FindObjectOfType<BagContent>();
-                    bagContent.resetBagItem(objectManager.bagItem.shop, objectManager.bagItem.key);
+                    bagContent.resetBagItem(ObjectManager.instance.bagItem.shop, ObjectManager.instance.bagItem.key);
                 }
-                bagItem = objectManager.bagItem;
+                bagItem = ObjectManager.instance.bagItem;
                 isUse = true;
-                objectManager.isSetItem = false;
+                ObjectManager.instance.isSetItem = false;
+                ObjectManager.instance.bagItem = null;
             }
         }
         else if (isUse && type!=0)
         {
             Debug.Log("use item!");
-            gameObject.GetComponent<Image>().sprite = objectManager.imgUseItem;
-            isUse = false;
             BagItem bag = gameObject.GetComponent<BagItem>();
-            loadDataPlayer.setCountItem(bag.shop, bag.key, false);
-            bag.shop = -1;
+            if (itemManager.UseItem(bag.shop, bag.key)) // use
+            {
+                gameObject.GetComponent<Image>().sprite = ObjectManager.instance.imgUseItem;
+                isUse = false;
+                LoadDataPlayer.instance.setCountItem(bag.shop, bag.key, false);
+                bag.shop = -1;
+            }
         }    
     }
 }

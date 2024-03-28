@@ -31,19 +31,19 @@ public class UseSkill : MonoBehaviour
     {
         playerMove.worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Debug.Log(playerMove.worldPosition);
-        if (!playerMove.twoSkill && playerMove.objUse.scanner.activeSelf)
+        if (!playerMove.twoSkill && ObjUse.instance.scanner.activeSelf)
         {
-            Vector2 v = playerMove.worldPosition - playerMove.objUse.scanner.transform.position;
+            Vector2 v = playerMove.worldPosition - ObjUse.instance.scanner.transform.position;
             if (v.magnitude < 3.9f)
             {
                 playerMove.rb.constraints = RigidbodyConstraints2D.FreezeRotation;
                 playerMove.isSkill = true;
                 playerMove.isChooseSk2 = false;
-                playerMove.objUse._sk2.isOn = true;
+                ObjUse.instance._sk2.isOn = true;
                 playerMove.twoSkill = true;
-                playerMove.objUse.scanner.SetActive(false);
+                ObjUse.instance.scanner.SetActive(false);
                 Debug.Log("choose");
-                if (playerMove.worldPosition.x - playerMove.objUse.scanner.transform.position.x >= 0)
+                if (playerMove.worldPosition.x - ObjUse.instance.scanner.transform.position.x >= 0)
                 {
                     location = PhotonNetwork.Instantiate(this.Location, new Vector3(playerMove.worldPosition.x, playerMove.worldPosition.y, 0), Quaternion.Euler(0, 0, 0f));
                     playerMove.isRightLoca = true;
@@ -66,27 +66,27 @@ public class UseSkill : MonoBehaviour
                 Invoke("resetLocation", 0.6f);
             }
         }
-        else if (!playerMove.threeSkill && playerMove.objUse.scannerFire.activeSelf)
+        else if (!playerMove.threeSkill && ObjUse.instance.scannerFire.activeSelf)
         {
             playerMove.isChooseSk3 = false;
             playerMove.isSkill = true;
-            playerMove.objUse._sk3.isOn = true;
+            ObjUse.instance._sk3.isOn = true;
             playerMove.threeSkill = true;
             fire = PhotonNetwork.Instantiate(this.Fire, new Vector3(playerMove.worldPosition.x, playerMove.worldPosition.y, 0), Quaternion.identity);
             playerMove.isSetFire = true;
-            playerMove.objUse.scannerFire.SetActive(false);
+            ObjUse.instance.scannerFire.SetActive(false);
             Invoke("resetFire", 0.7f);
 
         }
-        else if (!playerMove.fourSkill && playerMove.objUse.scannerFires.activeSelf)
+        else if (!playerMove.fourSkill && ObjUse.instance.scannerFires.activeSelf)
         {
             playerMove.isChooseSk4 = false;
             playerMove.isSkill = true;
-            playerMove.objUse._sk4.isOn = true;
+            ObjUse.instance._sk4.isOn = true;
             playerMove.fourSkill = true;
             fires = PhotonNetwork.Instantiate(this.Fires, new Vector3(playerMove.worldPosition.x - 1f, playerMove.worldPosition.y + 3.6f, 0), Quaternion.identity);
 
-            playerMove.objUse.scannerFires.SetActive(false);
+            ObjUse.instance.scannerFires.SetActive(false);
             Invoke("resetFires", 1.2f);
 
         }
@@ -146,8 +146,8 @@ public class UseSkill : MonoBehaviour
     {
         playerMove.isSkill = true;
         playerMove.oneSkill = true;
-        playerMove.objUse._sk1.timeSkill();
-        playerMove.objUse._sk1.isOn = true;
+        ObjUse.instance._sk1.timeSkill();
+        ObjUse.instance._sk1.isOn = true;
         if (playerMove.idPlayer == 1)
         {
             GameObject _arrow = Instantiate(arrow, transform.position, arrow.transform.rotation);
@@ -189,19 +189,19 @@ public class UseSkill : MonoBehaviour
     public void setSkill2()
     {
         //playerMove.isSkill = true;
-        playerMove.objUse.scanner.SetActive(true);
-        playerMove.objUse._sk2.timeSkill();
+        ObjUse.instance.scanner.SetActive(true);
+        ObjUse.instance._sk2.timeSkill();
     }
     public void setSkill3()
     {
         //playerMove.isSkill = true;
-        playerMove.objUse.scannerFire.SetActive(true);
-        playerMove.objUse._sk3.timeSkill();
+        ObjUse.instance.scannerFire.SetActive(true);
+        ObjUse.instance._sk3.timeSkill();
     }
     public void setSkill4()
     {
         //playerMove.isSkill = true;
-        playerMove.objUse.scannerFires.SetActive(true);
-        playerMove.objUse._sk4.timeSkill();
+        ObjUse.instance.scannerFires.SetActive(true);
+        ObjUse.instance._sk4.timeSkill();
     }
 }

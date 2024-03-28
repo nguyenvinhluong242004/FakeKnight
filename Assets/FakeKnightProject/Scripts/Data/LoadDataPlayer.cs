@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PlayFab;
@@ -10,15 +10,22 @@ using TMPro;
 
 public class LoadDataPlayer : MonoBehaviour
 {
+    [SerializeField] public static LoadDataPlayer instance;
     [SerializeField] private GameObject photonManager;
     [SerializeField] public DataPlayer dataPlayer;
-    [SerializeField] private string namePlayer;
+    [SerializeField] public string namePlayer;
+    [SerializeField] public string nameInGame;
+    [SerializeField] public string playfabID;
     [SerializeField] private BagContent bagContent;
-    [SerializeField] private ObjectManager objectManager;
     [SerializeField] private TMP_Text _name;
     [SerializeField] public MoneyPlayer moneyPlayer;
     [SerializeField] private LoadingGame loadingGame;
     [SerializeField] private InformationItem informationItem;
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+    }
     void Start()
     {
         GetAppearance();
@@ -33,6 +40,10 @@ public class LoadDataPlayer : MonoBehaviour
     {
         // get username
         namePlayer = result.PlayerProfile.DisplayName;
+        string idPlayer = result.PlayerProfile.PlayerId;
+        playfabID = idPlayer;
+        dataPlayer.PlayFabID = idPlayer;
+        Debug.Log("ID: " + idPlayer);
         Debug.Log("PlayFab Username: " + namePlayer);
     }
     public void GetAppearance()  // Get id to player present
@@ -47,6 +58,7 @@ public class LoadDataPlayer : MonoBehaviour
             DataGame dataGame = JsonConvert.DeserializeObject<DataGame>(result.Data["DataGamePlayer"].Value);
             dataPlayer.setDataGame(dataGame);// Data ở playfab web null
             _name.text = dataPlayer.name;
+            nameInGame = dataPlayer.name;
             //Debug.Log(dataGame.equipments[0]);
             setData();
         }
@@ -55,7 +67,7 @@ public class LoadDataPlayer : MonoBehaviour
     }
     public void setData()
     {
-        setPlayer();
+        //setPlayer();
         setItemBag();
         loadingGame.isDone = true;
         if (loadingGame.isDone && loadingGame.isDonePhoton)
@@ -82,7 +94,7 @@ public class LoadDataPlayer : MonoBehaviour
     {
         Debug.Log("Sucessful Data Send!");
     }
-    void setItemBag()
+    void setItemBag() // set các item trong túi đồ
     {
         for (int i=0; i<8; i++)
             if (dataPlayer.equipments[i] != -1)
@@ -98,13 +110,13 @@ public class LoadDataPlayer : MonoBehaviour
                 if (itemValue != 0)
                 {
                     if (row==0)
-                        bagContent.initBagItem(row, col, itemValue, informationItem.data[row, col].type, objectManager.imagesS1[col]);
+                        bagContent.initBagItem(row, col, itemValue, informationItem.data[row, col].type, ObjectManager.instance.imagesS1[col]);
                     else if(row == 1)
-                        bagContent.initBagItem(row, col, itemValue, informationItem.data[row, col].type, objectManager.imagesS2[col]);
+                        bagContent.initBagItem(row, col, itemValue, informationItem.data[row, col].type, ObjectManager.instance.imagesS2[col]);
                     else if (row == 2)
-                        bagContent.initBagItem(row, col, itemValue, informationItem.data[row, col].type, objectManager.imagesS3[col]);
+                        bagContent.initBagItem(row, col, itemValue, informationItem.data[row, col].type, ObjectManager.instance.imagesS3[col]);
                     else
-                        bagContent.initBagItem(row, col, itemValue, informationItem.data[row, col].type, objectManager.imagesS4[col]);
+                        bagContent.initBagItem(row, col, itemValue, informationItem.data[row, col].type, ObjectManager.instance.imagesS4[col]);
                 }
             }
         }
@@ -114,7 +126,7 @@ public class LoadDataPlayer : MonoBehaviour
                 dataPlayer.items[0, dataPlayer.equipments[i]] += 1;
             }
     } 
-    public void setCountItem(int shop, int key, bool k)
+    public void setCountItem(int shop, int key, bool k) // thay đổi số lượng item
     {
         if (k)
             dataPlayer.items[shop, key]++;
@@ -132,18 +144,19 @@ public class LoadDataPlayer : MonoBehaviour
         dataPlayer.isSound = k;
         SaveDataGamePlayer();
     }
-    public void setPlayer()
+    public void setPlayer() // set hình ảnh, âm thanh
     {
-        objectManager.imgProfile.sprite = objectManager.imgPlayers[dataPlayer.idPlayer];
+        //ObjectManager.instance.imgProfile.sprite = ObjectManager.instance.imgPlayers[dataPlayer.idPlayer];
 
-        // get Music, Sound Playerr
-        objectManager.isSound = dataPlayer.isSound; 
-        objectManager._sound.isOn = dataPlayer.isSound; 
-        if (dataPlayer.isMusic)
-            objectManager.audio.Play();
-        objectManager._muic.isOn = dataPlayer.isMusic;
+        //// get Music, Sound Playerr
+        //ObjectManager.instance.isSound = dataPlayer.isSound;
+        //if (dataPlayer.isSound)
+        //    ObjectManager.instance.
+        //if (dataPlayer.isMusic)
+        //    ObjectManager.instance.musicAudio.Play();
+        //ObjectManager.instance._muic.isOn = dataPlayer.isMusic;
     } 
-    public void LogOut()
+    public void LogOut() // out game
     {
         FindObjectOfType<SceneControl>().LoadScene("Login");
     }

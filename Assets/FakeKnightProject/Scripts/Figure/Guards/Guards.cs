@@ -9,7 +9,10 @@ public class Guards : MonoBehaviour
     [SerializeField] private Animator anm;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private SpriteRenderer spr;
-    [SerializeField] private bool isOn, isStart, isL, isSkill;
+    [SerializeField] private bool isOn;
+    [SerializeField] private bool isStart;
+    [SerializeField] private bool isL;
+    [SerializeField] private bool isSkill;
     public GameObject enemy;
     public GameObject player;
     Vector3 po;
@@ -78,7 +81,7 @@ public class Guards : MonoBehaviour
             Debug.Log("hello");
             player = collision.gameObject;
         }   
-        else if (!isOn && collision.CompareTag("Enemy"))
+        else if (!isOn && collision.CompareTag("Enemy")) // có quái đi khỏi phạm vi cho phép
         {
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             Debug.Log("enemy");
@@ -96,7 +99,7 @@ public class Guards : MonoBehaviour
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if(isOn && collision.gameObject.CompareTag("Enemy"))
+        if(isOn && collision.gameObject.CompareTag("Enemy")) // giết quái khi nó đi vào vùng không cho phép
         {
             isSkill = true;
             photonView.RPC("PlayAnimation", RpcTarget.All, "skill");

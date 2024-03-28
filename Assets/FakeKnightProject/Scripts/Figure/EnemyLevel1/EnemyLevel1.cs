@@ -7,7 +7,13 @@ public class EnemyLevel1 : MonoBehaviour
 {
     [SerializeField] private PhotonView photonView;
     [SerializeField] public float blood;
-    [SerializeField] private bool isEfect, isDie, isRandom, isSkill, isChangeConstrains, isChoose, isSK4;
+    [SerializeField] private bool isEfect;
+    [SerializeField] private bool isDie;
+    [SerializeField] private bool isRandom;
+    [SerializeField] private bool isSkill;
+    [SerializeField] private bool isChangeConstrains; // thay đổi thuộc tính constrain x,y,z
+    [SerializeField] private bool isChoose;
+    [SerializeField] private bool isSK4;
     [SerializeField] private Blood blood_;
     [SerializeField] private GameObject bl;
     [SerializeField] private GameObject cut;
@@ -42,7 +48,7 @@ public class EnemyLevel1 : MonoBehaviour
                         spr.sortingOrder = 0;
                     if (!isChangeConstrains)
                     {
-                        rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
+                        photonView.RPC("SyncConstrain", RpcTarget.AllBuffered, true);
                         isChangeConstrains = true;
                     }
                     if (spr.flipX && player.transform.position.x > transform.position.x)
@@ -58,6 +64,8 @@ public class EnemyLevel1 : MonoBehaviour
                         else
                             cut = PhotonNetwork.Instantiate(this.Cut, transform.position + new Vector3(0.4f, 0, 0), Quaternion.Euler(0, 0, 180f));
                         isSkill = true;
+                        player.hitEnemyAttack();
+                        player.playerImpact.setBlood(7f);
                         Invoke("resetSkill", 1f);
                     }
                     if (player.isSkill)
@@ -71,6 +79,7 @@ public class EnemyLevel1 : MonoBehaviour
                                     if (transform.position.x < player.transform.position.x + 0.9f && transform.position.x > player.transform.position.x - 0.9f)
                                     {
                                         Debug.Log("hitU");
+                                        hitPlayerAttack();
                                         player.oneSkill = false;
                                         photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
                                         isChoose = true;
@@ -84,6 +93,7 @@ public class EnemyLevel1 : MonoBehaviour
                                     if (transform.position.x < player.transform.position.x + 0.9f && transform.position.x > player.transform.position.x - 0.9f)
                                     {
                                         Debug.Log("hitD");
+                                        hitPlayerAttack();
                                         player.oneSkill = false;
                                         photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
                                         isChoose = true;
@@ -95,6 +105,7 @@ public class EnemyLevel1 : MonoBehaviour
                                 if (transform.position.x - player.transform.position.x < 0.8f)
                                 {
                                     Debug.Log("hitL");
+                                    hitPlayerAttack();
                                     player.oneSkill = false;
                                     photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
                                     isChoose = true;
@@ -105,6 +116,7 @@ public class EnemyLevel1 : MonoBehaviour
                                 if (player.transform.position.x - transform.position.x < 0.8f)
                                 {
                                     Debug.Log("hitR");
+                                    hitPlayerAttack();
                                     player.oneSkill = false;
                                     photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
                                     isChoose = true;
@@ -123,6 +135,7 @@ public class EnemyLevel1 : MonoBehaviour
                                     bl.SetActive(true);
                                 Debug.Log("trung chieu 2");
                                 isChoose = true;
+                                hitPlayerAttack();
                                 player.twoSkill = false;
                                 photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 12f);
                             }
@@ -135,7 +148,7 @@ public class EnemyLevel1 : MonoBehaviour
             {
                 if (isChangeConstrains)
                 {
-                    rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+                    photonView.RPC("SyncConstrain", RpcTarget.AllBuffered, false);
                     isChangeConstrains = false;
                 }
                 if (isChoose)
@@ -156,19 +169,19 @@ public class EnemyLevel1 : MonoBehaviour
                     else
                     {
                         // Giới hạn độ dài của vectơ hướng thành 1
-                        direction = Vector2.ClampMagnitude(direction, 1f);
+                        direction = Vector2.ClampMagnitude(direction, 1.4f);
                         if (direction.x < 0)
                             photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, true);
                         else
                             photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, false);
                         // Di chuyển quái vật theo vectơ hướng với tốc độ đã đặt
-                        transform.position = Vector2.MoveTowards(currentPos, currentPos + direction, 1f * Time.deltaTime);
+                        transform.position = Vector2.MoveTowards(currentPos, currentPos + direction, 1.4f * Time.deltaTime);
                         photonView.RPC("PlayAnimation", RpcTarget.All, "run");
                     }
                 }
                 else if (!isRandom)
                 {
-                    rb.velocity = Vector2.ClampMagnitude(new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)), 1f);
+                    rb.velocity = Vector2.ClampMagnitude(new Vector2(Random.Range(-1.5f, 1.5f), Random.Range(-1.5f, 1.5f)), 1.4f);
                     if (rb.velocity.x < 0)
                         photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, true);
                     else
@@ -183,8 +196,11 @@ public class EnemyLevel1 : MonoBehaviour
         if (!isDie && blood <= 0f)
         {
             isDie = true;
-            photonView.RPC("PlayAnimation", RpcTarget.All, "dealth");
-            Invoke("destroy", 0.7f);
+            if (photonView.IsMine)
+            {
+                photonView.RPC("PlayAnimation", RpcTarget.All, "dealth");
+                Invoke("destroy", 0.7f);
+            }
         }
         // xử lí hỏa bạo
         if (!isDie && player && player.threeSkill)
@@ -194,6 +210,7 @@ public class EnemyLevel1 : MonoBehaviour
             {
                 if (!bl.activeSelf)
                     bl.SetActive(true);
+                //hitPlayerAttack();
                 Debug.Log("trung chieu 3");
                 isChoose = true;
                 player.threeSkill = false;
@@ -225,8 +242,7 @@ public class EnemyLevel1 : MonoBehaviour
             PhotonNetwork.Destroy(cut);
         }
         // xử lí vấn đề all player bị mất máu
-        if (GetComponent<PhotonView>().IsMine)
-            player.playerImpact.setBlood(1f);
+        //if (GetComponent<PhotonView>().IsMine)
         Invoke("resteTimeSkill", 2.4f);
     }    
     void resteTimeSkill()
@@ -276,10 +292,31 @@ public class EnemyLevel1 : MonoBehaviour
             bl.SetActive(true);
         photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 10f);
     }
+    void hitPlayerAttack()
+    {
+        spr.color = new Color(1f, 1f, 1f, 0.5f);
+        Invoke("resetColor", 0.12f);
+    }
+    void resetColor()
+    {
+        spr.color = new Color(1f, 1f, 1f, 1f);
+    }
     [PunRPC]
     void PlayAnimation(string animationName)
     {
         anm.Play(animationName);
+    }
+    [PunRPC]
+    void SyncConstrain(bool state)
+    {
+        if (state) // đứng yên
+        {
+            rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
+        }
+        else // di chuyển
+        {
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
     }
     [PunRPC]
     void SyncFlipX(bool flipState)

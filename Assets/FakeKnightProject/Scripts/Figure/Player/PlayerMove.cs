@@ -7,6 +7,7 @@ using TMPro;
 
 public class PlayerMove : MonoBehaviour
 {
+    [SerializeField] public PlayerNameID playerNameID;
     [SerializeField] public TMP_Text textName;
     [SerializeField] private UseSkill useSkill;
     [SerializeField] private AnmPlayer anmPlayer;
@@ -19,7 +20,11 @@ public class PlayerMove : MonoBehaviour
     public float verticalInput;
     [SerializeField] public float speed;
 
-    [SerializeField] public bool isSetLocation, isSetFire, isFlag, isRightLoca, isU, isD, isLR, isUD, isSkill, oneSkill, twoSkill, threeSkill, fourSkill;
+    [SerializeField] public bool isSetLocation, isSetFire;
+    [SerializeField] public bool isFlag, isRightLoca;
+    [SerializeField] public bool isU, isD, isLR,isUD;
+    [SerializeField] public bool isSkill;
+    [SerializeField] public bool oneSkill, twoSkill, threeSkill, fourSkill;
     [SerializeField] public bool isChooseSk1, isChooseSk2, isChooseSk3, isChooseSk4;
     [SerializeField] private Joytick joytick;
     [SerializeField] public PlayerImpact playerImpact;
@@ -30,34 +35,35 @@ public class PlayerMove : MonoBehaviour
     public Vector3 pastPlayer;
     int leftTouch = 99;
     int rightTouch = 99;
-    [SerializeField] public ObjUse objUse;
     void Start()
     {
         mainCamera = FindObjectOfType<Camera>();
-        objUse = FindObjectOfType<ObjUse>();
         if (GetComponent<PhotonView>().IsMine)
         {
-            if (!objUse)
-                objUse = FindObjectOfType<ObjUse>();
-            objUse.player = gameObject.GetComponent<PlayerMove>();
-            objUse.cam.Follow = gameObject.transform;
-            objUse.moneyPlayer = gameObject.GetComponent<MoneyPlayer>();
+            ObjUse.instance.player = gameObject.GetComponent<PlayerMove>();
+            ObjUse.instance.playerImpact = gameObject.GetComponent<PlayerImpact>();
+            ObjUse.instance.cam.Follow = gameObject.transform;
+            ObjUse.instance.moneyPlayer = gameObject.GetComponent<MoneyPlayer>();
         }
         else
         {
             Debug.Log(GetComponent<PhotonView>().Owner.NickName + "own");
             string nickName = GetComponent<PhotonView>().Owner.NickName;
             string[] parts = nickName.Split('-');
-            if (parts.Length == 2)
+            if (parts.Length == 3)
             {
                 string name = parts[0].Trim();
                 int id = int.Parse(parts[1].Trim());
+                string playfabID = parts[2].Trim();
+                Debug.Log("Name: " + name + "Id: " + id + "PlayfabID: " + playfabID);
                 textName.text = name;
                 setPlayer(id);
+                playerNameID.nickName = name;
+                playerNameID.playfabID = playfabID;
             }
         }
-        objUse.loadDataPlayer.moneyPlayer = gameObject.GetComponent<MoneyPlayer>();
-        objUse.loadDataPlayer.moneyPlayer.setValue();
+        LoadDataPlayer.instance.moneyPlayer = gameObject.GetComponent<MoneyPlayer>();
+        LoadDataPlayer.instance.moneyPlayer.setValue();
         isU = false;
         isD = true;
         isLR = false;
@@ -87,7 +93,7 @@ public class PlayerMove : MonoBehaviour
                     if (t.position.x > Screen.width / 2)
                     {
                         rightTouch = t.fingerId;
-                        if (!oneSkill && !isChooseSk1 && touchPos.x > objUse.sk1.position.x - 0.6f && touchPos.x < objUse.sk1.position.x + 0.6f && touchPos.y > objUse.sk1.position.y - 0.6f && touchPos.y < objUse.sk1.position.y + 0.6f)
+                        if (!oneSkill && !isChooseSk1 && touchPos.x > ObjUse.instance.sk1.position.x - 0.6f && touchPos.x < ObjUse.instance.sk1.position.x + 0.6f && touchPos.y > ObjUse.instance.sk1.position.y - 0.6f && touchPos.y < ObjUse.instance.sk1.position.y + 0.6f)
                         {
                             Debug.Log("use skill 1!");
                             // fix late: đang
@@ -96,17 +102,17 @@ public class PlayerMove : MonoBehaviour
                             oneSkill = true;
                             isChooseSk1 = true;
                             useSkill.getSkillOne();
-                            objUse._sk1.timeSkill();
-                            objUse._sk1.isOn = true;
+                            ObjUse.instance._sk1.timeSkill();
+                            ObjUse.instance._sk1.isOn = true;
                         }
-                        else if (!twoSkill && touchPos.x > objUse.sk2.position.x - 0.6f && touchPos.x < objUse.sk2.position.x + 0.6f && touchPos.y > objUse.sk2.position.y - 0.6f && touchPos.y < objUse.sk2.position.y + 0.6f)
+                        else if (!twoSkill && touchPos.x > ObjUse.instance.sk2.position.x - 0.6f && touchPos.x < ObjUse.instance.sk2.position.x + 0.6f && touchPos.y > ObjUse.instance.sk2.position.y - 0.6f && touchPos.y < ObjUse.instance.sk2.position.y + 0.6f)
                         {
                             Debug.Log("use skill 2!");
                             if (isChooseSk2)
                             {
                                 isSkill = false;
-                                objUse._sk2.ResetSK();
-                                objUse.scanner.SetActive(false);
+                                ObjUse.instance._sk2.ResetSK();
+                                ObjUse.instance.scanner.SetActive(false);
                                 isChooseSk2 = false;
                             }
                             else
@@ -115,14 +121,14 @@ public class PlayerMove : MonoBehaviour
                                 useSkill.setSkill2();
                             }
                         }
-                        else if (!threeSkill && touchPos.x > objUse.sk3.position.x - 0.6f && touchPos.x < objUse.sk3.position.x + 0.6f && touchPos.y > objUse.sk3.position.y - 0.6f && touchPos.y < objUse.sk3.position.y + 0.6f)
+                        else if (!threeSkill && touchPos.x > ObjUse.instance.sk3.position.x - 0.6f && touchPos.x < ObjUse.instance.sk3.position.x + 0.6f && touchPos.y > ObjUse.instance.sk3.position.y - 0.6f && touchPos.y < ObjUse.instance.sk3.position.y + 0.6f)
                         {
                             Debug.Log("use skill 3!");
                             if (isChooseSk3)
                             {
                                 isSkill = false;
-                                objUse._sk3.ResetSK();
-                                objUse.scannerFire.SetActive(false);
+                                ObjUse.instance._sk3.ResetSK();
+                                ObjUse.instance.scannerFire.SetActive(false);
                                 isChooseSk3 = false;
                             }
                             else
@@ -131,14 +137,14 @@ public class PlayerMove : MonoBehaviour
                                 useSkill.setSkill3();
                             }
                         }
-                        else if (!fourSkill && touchPos.x > objUse.sk4.position.x - 0.6f && touchPos.x < objUse.sk4.position.x + 0.6f && touchPos.y > objUse.sk4.position.y - 0.6f && touchPos.y < objUse.sk4.position.y + 0.6f)
+                        else if (!fourSkill && touchPos.x > ObjUse.instance.sk4.position.x - 0.6f && touchPos.x < ObjUse.instance.sk4.position.x + 0.6f && touchPos.y > ObjUse.instance.sk4.position.y - 0.6f && touchPos.y < ObjUse.instance.sk4.position.y + 0.6f)
                         {
                             Debug.Log("use skill 4!");
                             if (isChooseSk4)
                             {
                                 isSkill = false;
-                                objUse._sk4.ResetSK();
-                                objUse.scannerFires.SetActive(false);
+                                ObjUse.instance._sk4.ResetSK();
+                                ObjUse.instance.scannerFires.SetActive(false);
                                 isChooseSk4 = false;
                             }
                             else
@@ -152,7 +158,7 @@ public class PlayerMove : MonoBehaviour
                     }
                     else
                     {
-                        if (touchPos.x > objUse.sta.position.x - 1f && touchPos.x < objUse.sta.position.x + 1f && touchPos.y > objUse.sta.position.y - 1f && touchPos.y < objUse.sta.position.y + 1f)
+                        if (touchPos.x > ObjUse.instance.sta.position.x - 1f && touchPos.x < ObjUse.instance.sta.position.x + 1f && touchPos.y > ObjUse.instance.sta.position.y - 1f && touchPos.y < ObjUse.instance.sta.position.y + 1f)
                         {
                             leftTouch = t.fingerId;
                             startingPoint = touchPos;
@@ -176,7 +182,7 @@ public class PlayerMove : MonoBehaviour
 
                     velocity_ = direction.normalized;
 
-                    objUse.sta.transform.position = new Vector3(objUse.bgSta.transform.position.x + direction.x, objUse.bgSta.transform.position.y + direction.y, objUse.sta.transform.position.z);
+                    ObjUse.instance.sta.transform.position = new Vector3(ObjUse.instance.bgSta.transform.position.x + direction.x, ObjUse.instance.bgSta.transform.position.y + direction.y, ObjUse.instance.sta.transform.position.z);
 
                 }
                 else if (t.phase == TouchPhase.Ended && rightTouch == t.fingerId)
@@ -188,7 +194,7 @@ public class PlayerMove : MonoBehaviour
                     Debug.Log("don't move");
                     leftTouch = 99;
                     joytick.choose(false);
-                    objUse.sta.transform.position = new Vector3(objUse.bgSta.transform.position.x, objUse.bgSta.transform.position.y, objUse.sta.transform.position.z);
+                    ObjUse.instance.sta.transform.position = new Vector3(ObjUse.instance.bgSta.transform.position.x, ObjUse.instance.bgSta.transform.position.y, ObjUse.instance.sta.transform.position.z);
                     velocity_ = new Vector2(0, 0);
                     rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
                 }
@@ -284,19 +290,30 @@ public class PlayerMove : MonoBehaviour
         // set figure
         idPlayer = id;
         Debug.Log(idPlayer);
-        if (!objUse) 
-            objUse = FindObjectOfType<ObjUse>();
-        anm.runtimeAnimatorController = objUse.objectManager.anmPlayers[idPlayer];
-        sprite.sprite = objUse.objectManager.imgPlayers[idPlayer];
+        anm.runtimeAnimatorController = ObjectManager.instance.anmPlayers[idPlayer];
+        sprite.sprite = ObjectManager.instance.imgPlayers[idPlayer];
         if (GetComponent<PhotonView>().IsMine)
         {
             // get Music, Sound Playerr
-            objUse.objectManager.isSound = objUse.dataPlayer.isSound;
-            objUse.objectManager._sound.isOn = objUse.dataPlayer.isSound;
-            if (objUse.dataPlayer.isMusic)
-                objUse.objectManager.audio.Play();
-            objUse.objectManager._muic.isOn = objUse.dataPlayer.isMusic;
-            objUse.objectManager._muic.isOn = objUse.dataPlayer.isMusic;
+            ObjectManager.instance.isSound = ObjUse.instance.dataPlayer.isSound;
+            ObjectManager.instance.isMusic = ObjUse.instance.dataPlayer.isMusic;
+            if (ObjUse.instance.dataPlayer.isMusic)
+            {
+                ObjectManager.instance.musicAudio.Play();
+                ObjectManager.instance.music.GetComponent<Image>().sprite = ObjectManager.instance.musicOn;
+            }
+            else
+            {
+                ObjectManager.instance.music.GetComponent<Image>().sprite = ObjectManager.instance.musicOff;
+            }
+            if (ObjUse.instance.dataPlayer.isSound)
+            {
+                ObjectManager.instance.sound.GetComponent<Image>().sprite = ObjectManager.instance.musicOn;
+            }
+            else
+            {
+                ObjectManager.instance.sound.GetComponent<Image>().sprite = ObjectManager.instance.musicOff;
+            }
         }
     }
     void setJoytick()
@@ -332,5 +349,21 @@ public class PlayerMove : MonoBehaviour
     public int GetPlayerNumber()
     {
         return idPlayer;
+    }
+    public void hitEnemyAttack()
+    {
+        sprite.color = new Color(1f, 1f, 1f, 0.5f);
+        Invoke("resetColor", 0.12f);
+    }
+    void resetColor()
+    {
+        sprite.color = new Color(1f, 1f, 1f, 1f);
+    }
+    [PunRPC]
+    void ReceiveMessage(string message)
+    {
+        // Xử lý tin nhắn nhận được tại đây
+        Debug.Log("Received message: " + message);
+        PlayfabFriendManager.instance.addInvite(message);
     }
 }

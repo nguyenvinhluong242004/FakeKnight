@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 [System.Serializable]
@@ -9,7 +9,7 @@ public class DataInServer
     public Vector3[] NPCPositions;
     public Vector3[] NPCKillPositionsL;
     public Vector3[] NPCKillPositionsR;
-    public DataInServer(int eS, int eD, int nP, int nKL, int nKR)
+    public DataInServer(int eS, int eD, int nP, int nKL, int nKR) // cập nhật số nhân vật, quái ban đầu
     {
         enemySlimePositions = new Vector3[eS];
         enemyDevilPositions = new Vector3[eD];
@@ -22,7 +22,7 @@ public class DataInServer
 public class ServerData
 {
     public string _nameServer;
-    public DataInServer dataInServers = new DataInServer(5, 5, 1, 1, 1);
+    public DataInServer dataInServers = new DataInServer(5, 5, 1, 1, 1); 
 }
 [CreateAssetMenu(fileName = "GameProgressData", menuName = "Custom/GameProgressData", order = 1)]
 public class DataUseLoadGame : ScriptableObject
@@ -30,7 +30,7 @@ public class DataUseLoadGame : ScriptableObject
     public List<ServerData> ServersData = new List<ServerData>();
     public string _name;
 
-    public void add(string _name)
+    public void add(string _name) // thêm dữ liệu vào server
     {
         if (getIdServer(_name) >= 0)
             return;

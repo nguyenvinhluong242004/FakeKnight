@@ -9,7 +9,6 @@ public class GiftItem : MonoBehaviour
     public GameObject panel;
     public GameObject paneled;
     public bool isGet = false;
-    [SerializeField] private LoadDataPlayer loadDataPlayer;
     [SerializeField] private int type;
     [SerializeField] private int shop;
     [SerializeField] private int key;
@@ -23,8 +22,8 @@ public class GiftItem : MonoBehaviour
     }
     public void getGift()
     {
-        Debug.Log(loadDataPlayer.dataPlayer.day);
-        if (day == loadDataPlayer.dataPlayer.day)
+        Debug.Log(LoadDataPlayer.instance.dataPlayer.day);
+        if (day == LoadDataPlayer.instance.dataPlayer.day)
             Debug.Log("Trung");
         else
             Debug.Log("khac");
@@ -32,13 +31,13 @@ public class GiftItem : MonoBehaviour
         {
             paneled.SetActive(true);
             isGet = false;
-            loadDataPlayer.dataPlayer.gift += 1;
-            loadDataPlayer.dataPlayer.day = day;
+            LoadDataPlayer.instance.dataPlayer.gift += 1;
+            LoadDataPlayer.instance.dataPlayer.day = day;
             int val = int.Parse(value.text);
             if (type == 0)
-                loadDataPlayer.dataPlayer.gold += val;
-            loadDataPlayer.moneyPlayer.setValue();
-            loadDataPlayer.SaveDataGamePlayer();
+                LoadDataPlayer.instance.dataPlayer.gold += val;
+            LoadDataPlayer.instance.moneyPlayer.setValue();
+            LoadDataPlayer.instance.SaveDataGamePlayer();
         }    
     }    
 }

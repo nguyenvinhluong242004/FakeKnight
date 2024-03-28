@@ -5,51 +5,60 @@ using UnityEngine.UI;
 
 public class Button : MonoBehaviour
 {
-    ObjectManager objectManager;
-    // Start is called before the first frame update
-    void Start()
+    public void getMails()
     {
-        objectManager = FindObjectOfType<ObjectManager>();
-    }
+        ObjectManager.instance.mails.SetActive(!ObjectManager.instance.mails.activeSelf);
+    }    
     public void setMusic()
     {
-        objectManager.loadDataPlayer.setMusic(objectManager._muic.isOn);
-        if (objectManager._muic.isOn)
+        ObjectManager.instance.isMusic = !ObjectManager.instance.isMusic;
+        LoadDataPlayer.instance.setMusic(ObjectManager.instance.isMusic);
+        if (ObjUse.instance.dataPlayer.isMusic)
         {
-            objectManager.audio.Play();
+            ObjectManager.instance.musicAudio.Play();
+            ObjectManager.instance.music.GetComponent<Image>().sprite = ObjectManager.instance.musicOn;
         }
         else
         {
-            objectManager.audio.Stop();
+            ObjectManager.instance.musicAudio.Stop();
+            ObjectManager.instance.music.GetComponent<Image>().sprite = ObjectManager.instance.musicOff;
         }
     }
     public void setSound()
     {
-        objectManager.loadDataPlayer.setSound(objectManager._sound.isOn);
-        objectManager.isSound = objectManager._sound.isOn;
+        ObjectManager.instance.isSound = !ObjectManager.instance.isSound;
+        LoadDataPlayer.instance.setSound(ObjectManager.instance.isSound);
+        if (ObjUse.instance.dataPlayer.isSound)
+        {
+            ObjectManager.instance.sound.GetComponent<Image>().sprite = ObjectManager.instance.musicOn;
+        }
+        else
+        {
+            ObjectManager.instance.sound.GetComponent<Image>().sprite = ObjectManager.instance.musicOff;
+        }
     }
     public void getInfor()
     {
-        objectManager.infor.SetActive(!objectManager.infor.activeSelf);
+        ObjectManager.instance.infor.SetActive(!ObjectManager.instance.infor.activeSelf);
     }
     public void getBag()
     {
-        objectManager.bag.SetActive(!objectManager.bag.activeSelf);
-        if(!objectManager.bag.activeSelf)
+        ObjectManager.instance.bag.SetActive(!ObjectManager.instance.bag.activeSelf);
+        if(!ObjectManager.instance.bag.activeSelf)
         {
-            if (objectManager.bagItem != null)
-                objectManager.bagItem.GetComponent<Image>().color = new Color(1f, 1f, 0.5f, 0.5f);
-            objectManager.isSetItem = false;
+            if (ObjectManager.instance.bagItem != null)
+                ObjectManager.instance.bagItem.GetComponent<Image>().color = new Color(1f, 1f, 0.5f, 0.5f);
+            ObjectManager.instance.isSetItem = false;
         }    
     }
     public void getGift()
     {
-        objectManager.gift.SetActive(!objectManager.gift.activeSelf);
+        ObjectManager.instance.gift.SetActive(!ObjectManager.instance.gift.activeSelf);
     }    
     public void getShop()
     {
-        objectManager.shop.SetActive(!objectManager.shop.activeSelf);
-        if(!objectManager.shop.activeSelf)
+        ObjectManager.instance.shop.SetActive(!ObjectManager.instance.shop.activeSelf);
+        if(!ObjectManager.instance.shop.activeSelf)
         {
             getCloseUiInforItem();
             getCloseUiBuyItem();
@@ -58,124 +67,124 @@ public class Button : MonoBehaviour
     }
     public void getMap()
     {
-        objectManager.map.SetActive(!objectManager.map.activeSelf);
-        objectManager.mapControl.setPositionMap(objectManager.poX, objectManager.poY);
-        if (objectManager.pastMap != null)
+        ObjectManager.instance.map.SetActive(!ObjectManager.instance.map.activeSelf);
+        ObjectManager.instance.mapControl.setPositionMap(ObjectManager.instance.poX, ObjectManager.instance.poY);
+        if (ObjectManager.instance.pastMap != null)
         {
-            objectManager.pastMap.GetComponent<Image>().sprite = objectManager.redImage;
+            ObjectManager.instance.pastMap.GetComponent<Image>().sprite = ObjectManager.instance.redImage;
         }
         //objectManager.positionPlayer.anchoredPosition = new Vector2(objectManager.poX, objectManager.poY);
     }
     public void getLocalMap()
     {
-        if (objectManager.pastMap != null)
-            objectManager.pastMap.GetComponent<Image>().sprite = objectManager.redImage;
+        if (ObjectManager.instance.pastMap != null)
+            ObjectManager.instance.pastMap.GetComponent<Image>().sprite = ObjectManager.instance.redImage;
         Image image = gameObject.GetComponent<Image>();
         if (image != null)
-            image.sprite = objectManager.greenImage;
+            image.sprite = ObjectManager.instance.greenImage;
         if (gameObject.name == "Idronia")
         {
-            objectManager.mapControl.setPositionMap(-100, 140);
+            ObjectManager.instance.mapControl.setPositionMap(-100, 140);
         }
         else if (gameObject.name == "Island")
         {
-            objectManager.mapControl.setPositionMap(460, 75);
+            ObjectManager.instance.mapControl.setPositionMap(460, 75);
         }
         else if (gameObject.name == "Valley")
         {
-            objectManager.mapControl.setPositionMap(423, -274);
+            ObjectManager.instance.mapControl.setPositionMap(423, -274);
         }
         else
         {
-            objectManager.mapControl.setPositionMap(168, -68);
+            ObjectManager.instance.mapControl.setPositionMap(168, -68);
         }
-        
-        objectManager.pastMap = gameObject;
+
+        ObjectManager.instance.pastMap = gameObject;
     }
     public void getSetting()
     {
-        objectManager.setting.SetActive(!objectManager.setting.activeSelf);
+        ObjectManager.instance.setting.SetActive(!ObjectManager.instance.setting.activeSelf);
     }
     public void getChat()
     {
-        objectManager.chat.SetActive(!objectManager.chat.activeSelf);
+        ObjectManager.instance.chat.SetActive(!ObjectManager.instance.chat.activeSelf);
     }
     public void getEmote()
     {
-        objectManager.emote.SetActive(!objectManager.emote.activeSelf);
+        ObjectManager.instance.emote.SetActive(!ObjectManager.instance.emote.activeSelf);
     }
     public void getAccessory()
     {
-        if(objectManager.pastButton!=null)
-            objectManager.pastButton.GetComponent<Image>().sprite = objectManager.redImage;
+        if(ObjectManager.instance.pastButton!=null)
+            ObjectManager.instance.pastButton.GetComponent<Image>().sprite = ObjectManager.instance.redImage;
         Image image = gameObject.GetComponent<Image>();
         if (image != null)
-            image.sprite = objectManager.greenImage;
-        if(gameObject!=objectManager.pastButton)
+            image.sprite = ObjectManager.instance.greenImage;
+        if(gameObject != ObjectManager.instance.pastButton)
         {
             if (gameObject.name == "Equipment")
             {
-                objectManager.pastShop.SetActive(!objectManager.pastShop.activeSelf);
-                objectManager.shopEquipment.SetActive(!objectManager.shopEquipment.activeSelf);
-                objectManager.pastShop = objectManager.shopEquipment;
+                ObjectManager.instance.pastShop.SetActive(!ObjectManager.instance.pastShop.activeSelf);
+                ObjectManager.instance.shopEquipment.SetActive(!ObjectManager.instance.shopEquipment.activeSelf);
+                ObjectManager.instance.pastShop = ObjectManager.instance.shopEquipment;
             }
             else if (gameObject.name == "Auxiliary")
             {
-                objectManager.pastShop.SetActive(!objectManager.pastShop.activeSelf);
-                objectManager.shopAuxiliary.SetActive(!objectManager.shopAuxiliary.activeSelf);
-                objectManager.pastShop = objectManager.shopAuxiliary;
+                ObjectManager.instance.pastShop.SetActive(!ObjectManager.instance.pastShop.activeSelf);
+                ObjectManager.instance.shopAuxiliary.SetActive(!ObjectManager.instance.shopAuxiliary.activeSelf);
+                ObjectManager.instance.pastShop = ObjectManager.instance.shopAuxiliary;
             }
             else if (gameObject.name == "Upgrate")
             {
-                objectManager.pastShop.SetActive(!objectManager.pastShop.activeSelf);
-                objectManager.shopUpgrate.SetActive(!objectManager.shopUpgrate.activeSelf);
-                objectManager.pastShop = objectManager.shopUpgrate;
+                ObjectManager.instance.pastShop.SetActive(!ObjectManager.instance.pastShop.activeSelf);
+                ObjectManager.instance.shopUpgrate.SetActive(!ObjectManager.instance.shopUpgrate.activeSelf);
+                ObjectManager.instance.pastShop = ObjectManager.instance.shopUpgrate;
             }
             else
             {
-                objectManager.pastShop.SetActive(!objectManager.pastShop.activeSelf);
-                objectManager.shopGeneral.SetActive(!objectManager.shopGeneral.activeSelf);
-                objectManager.pastShop = objectManager.shopGeneral;
+                ObjectManager.instance.pastShop.SetActive(!ObjectManager.instance.pastShop.activeSelf);
+                ObjectManager.instance.shopGeneral.SetActive(!ObjectManager.instance.shopGeneral.activeSelf);
+                ObjectManager.instance.pastShop = ObjectManager.instance.shopGeneral;
             }
-            objectManager.buy.SetActive(false);
-            objectManager.inforItem.SetActive(false);
-            objectManager.notBuy.SetActive(false);
-        }    
-        objectManager.pastButton = gameObject;
+            ObjectManager.instance.buy.SetActive(false);
+            ObjectManager.instance.inforItem.SetActive(false);
+            ObjectManager.instance.notBuy.SetActive(false);
+        }
+        ObjectManager.instance.pastButton = gameObject;
     }
     public void getCloseUiInforItem()
     {
-        objectManager.inforItem.SetActive(false);
+        ObjectManager.instance.inforItem.SetActive(false);
     }
     public void getCloseUiRemoveEquip()
     {
-        objectManager.removeEquip.SetActive(false);
-        objectManager.bagItem = null;
+        ObjectManager.instance.removeEquip.SetActive(false);
+        ObjectManager.instance.bagItem = null;
     }    
     public void getRemoveEquip()
     {
-        if (objectManager.equip)
+        if (ObjectManager.instance.equip)
         {
-            objectManager.equip.GetComponent<Image>().sprite = objectManager.imgUseItem;
-            objectManager.equip.GetComponent<BagItem>().isUse = false;
-            objectManager.equip.GetComponent<BagItem>().add.SetActive(true);
-            objectManager.loadDataPlayer.dataPlayer.equipments[objectManager.equip.GetComponent<BagItem>().idx] = -1;
-            objectManager.equip.GetComponent<BagItem>().bagContent.initBagItem(objectManager.bagItem.shop, objectManager.bagItem.key, 1, objectManager.bagItem.type, objectManager.bagItem.img.sprite);
-            objectManager.equip.GetComponent<BagItem>().bagItem = null;
-            objectManager.equip.GetComponent<BagItem>().img = null;
-            objectManager.equip.GetComponent<BagItem>().key = 0;
-            objectManager.bagItem = null;
-            objectManager.equip = null; 
-            objectManager.removeEquip.SetActive(false);
-            objectManager.loadDataPlayer.SaveDataGamePlayer();
+            ObjectManager.instance.equip.GetComponent<Image>().sprite = ObjectManager.instance.imgUseItem;
+            ObjectManager.instance.equip.GetComponent<BagItem>().isUse = false;
+            ObjectManager.instance.equip.GetComponent<BagItem>().add.SetActive(true);
+            LoadDataPlayer.instance.dataPlayer.equipments[ObjectManager.instance.equip.GetComponent<BagItem>().idx] = -1;
+            ObjectManager.instance.equip.GetComponent<BagItem>().bagContent.initBagItem(ObjectManager.instance.bagItem.shop, ObjectManager.instance.bagItem.key, 1, ObjectManager.instance.bagItem.type, ObjectManager.instance.bagItem.img.sprite);
+            ObjectManager.instance.equip.GetComponent<BagItem>().bagItem = null;
+            ObjectManager.instance.equip.GetComponent<BagItem>().img = null;
+            ObjectManager.instance.equip.GetComponent<BagItem>().key = 0;
+            ObjectManager.instance.bagItem = null;
+            ObjectManager.instance.equip = null;
+            ObjectManager.instance.removeEquip.SetActive(false);
+            LoadDataPlayer.instance.SaveDataGamePlayer();
         }    
     }    
     public void getCloseUiNotBuy()
     {
-        objectManager.notBuy.SetActive(false);
+        ObjectManager.instance.notBuy.SetActive(false);
     }    
     public void getCloseUiBuyItem()
     {
-        objectManager.buy.SetActive(false);
+        ObjectManager.instance.buy.SetActive(false);
     }
 }

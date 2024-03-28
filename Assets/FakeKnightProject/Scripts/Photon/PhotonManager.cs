@@ -9,15 +9,13 @@ using Photon.Realtime;
 public class PhotonManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private DataUseLoadGame dataUseLoadGame; // script table object
-    [SerializeField] private LoadDataPlayer loadDataPlayer;
-    [SerializeField] private ObjUse objUse;
-    [SerializeField] private ObjectManager objectManager;
     [SerializeField] private LoadingGame loadingGame;
     [SerializeField] public string playerName, nameServer;
     [SerializeField] public int idServer;
     //public UiRoomProfile roomPrefab;
     public List<RoomInfo> updatedRooms;
     public List<NameServer> servers = new List<NameServer>();
+    public List<PlayerNameID> playerIDs = new List<PlayerNameID>(); // do nothing
 
 
     public static PhotonManager instance;
@@ -31,7 +29,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         Login();
-        playerName = loadDataPlayer.dataPlayer.name;
+        playerName = LoadDataPlayer.instance.dataPlayer.name;
         nameServer = "SoSad";
     }
     //Logout / Login
@@ -45,7 +43,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         Debug.Log(transform.name + ": Login " + playerName);
         PhotonNetwork.AutomaticallySyncScene = true;
         Debug.Log(PhotonNetwork.LocalPlayer.NickName);
-        PhotonNetwork.LocalPlayer.NickName = $"{loadDataPlayer.dataPlayer.name} - {loadDataPlayer.dataPlayer.idPlayer}";
+        PhotonNetwork.LocalPlayer.NickName = $"{LoadDataPlayer.instance.dataPlayer.name} - {LoadDataPlayer.instance.dataPlayer.idPlayer} - {LoadDataPlayer.instance.dataPlayer.PlayFabID}";
         PhotonNetwork.ConnectUsingSettings();
     }
     public override void OnJoinedLobby()
@@ -61,13 +59,13 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public virtual void Create()
     {
         Debug.Log(transform.name + ": Create server " + nameServer);
-        //PhotonNetwork.LocalPlayer.NickName = loadDataPlayer.dataPlayer.name;
+        //PhotonNetwork.LocalPlayer.NickName = LoadDataPlayer.instance.dataPlayer.name;
         PhotonNetwork.CreateRoom(nameServer);
     }
     public virtual void Join()
     {
         Debug.Log(transform.name + ": Join room " + nameServer);
-        //PhotonNetwork.LocalPlayer.NickName = loadDataPlayer.dataPlayer.name;
+        //PhotonNetwork.LocalPlayer.NickName = LoadDataPlayer.instance.dataPlayer.name;
         PhotonNetwork.JoinRoom(nameServer);
     }
     public virtual void Leave()
@@ -78,6 +76,11 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public override void OnCreatedRoom()
     {
         Debug.Log("OnCreatedRoom");
+        NameServer nameServer_ = new NameServer
+        {
+            name = nameServer
+        };
+        this.servers.Add(nameServer_);
         //dataUseLoadGame.add(nameServer);
         idServer = dataUseLoadGame.getIdServer(nameServer);
         // load enemy and NPC
@@ -94,7 +97,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             foreach (Vector3 _po in dataUseLoadGame.ServersData[idServer].dataInServers.NPCPositions)
             {
                 GameObject p = PhotonNetwork.Instantiate(this.photonOldMan, _po, Quaternion.identity);
-                p.GetComponent<FigureMessage>().message = objUse.messageOldMan;
+                p.GetComponent<FigureMessage>().message = ObjUse.instance.messageOldMan;
             }
             foreach (Vector3 _po in dataUseLoadGame.ServersData[idServer].dataInServers.NPCKillPositionsL)
             {
@@ -229,7 +232,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         //        _name = parts[0].Trim(); // Lấy phần đầu tiên và loại bỏ khoảng trắng xung quanh
         //        id = int.Parse(parts[1].Trim()); // Lấy phần thứ hai và chuyển đổi sang số nguyên
         //    }
-        //    if (_name != loadDataPlayer.dataPlayer.name)
+        //    if (_name != LoadDataPlayer.instance.dataPlayer.name)
         //    {
         //        Debug.Log("trong vong for");
         //        // Spawn playerPrefab tương ứng
@@ -243,7 +246,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         //}
         // xử lí id: chua
         //GameObject playerObj;
-        //if (loadDataPlayer.dataPlayer.idPlayer == 0)
+        //if (LoadDataPlayer.instance.dataPlayer.idPlayer == 0)
         //    playerObj = Resources.Load(this.photonPlayer0) as GameObject;
         //else
         //    playerObj = Resources.Load(this.photonPlayer1) as GameObject;
@@ -260,18 +263,20 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         foreach (KeyValuePair<int, Player> playerData in PhotonNetwork.CurrentRoom.Players)
         {
             string nickName = playerData.Value.NickName;
+            Debug.Log(nickName);
             string[] parts = nickName.Split('-'); 
-            if (parts.Length == 2)
+            if (parts.Length == 3)
             {
                 string name = parts[0].Trim(); 
-                int id = int.Parse(parts[1].Trim()); 
+                int id = int.Parse(parts[1].Trim());
+                string playfabID = parts[2].Trim();
 
                 // Tạo một đối tượng PlayerProfile mới với name
                 playerProfile = new PlayerProfile
                 {
                     nickName = name
                 };
-                Debug.Log("Name: " + name + "Id: " + id);
+                Debug.Log("Name: " + name + "Id: " + id + "PlayfabID: " + playfabID);
                 this.players.Add(playerProfile);
             }
         }
@@ -279,10 +284,12 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     protected virtual void LoadPlayerPrefab()
     {
         GameObject player = PhotonNetwork.Instantiate(this.photonPlayer, Vector3.zero, Quaternion.identity);
-        Debug.Log("master " + loadDataPlayer.dataPlayer.idPlayer);
-        player.GetComponent<PlayerMove>().setPlayer(loadDataPlayer.dataPlayer.idPlayer);
-        objectManager.imgProfile.sprite = objectManager.imgPlayers[loadDataPlayer.dataPlayer.idPlayer];
-        player.GetComponent<PlayerMove>().textName.text = loadDataPlayer.dataPlayer.name;
+        Debug.Log("master " + LoadDataPlayer.instance.dataPlayer.idPlayer);
+        player.GetComponent<PlayerMove>().setPlayer(LoadDataPlayer.instance.dataPlayer.idPlayer);
+        ObjectManager.instance.imgProfile.sprite = ObjectManager.instance.imgPlayers[LoadDataPlayer.instance.dataPlayer.idPlayer];
+        player.GetComponent<PlayerMove>().textName.text = LoadDataPlayer.instance.dataPlayer.name;
+        player.GetComponent<PlayerMove>().playerNameID.nickName = LoadDataPlayer.instance.dataPlayer.name;
+        player.GetComponent<PlayerMove>().playerNameID.playfabID = LoadDataPlayer.instance.dataPlayer.PlayFabID;
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {

@@ -6,10 +6,9 @@ using UnityEngine.UI;
 public class MapControl : MonoBehaviour
 {
     [SerializeField] private RectTransform rect;
-    [SerializeField] private ObjectManager objectManager;
     void Update()
     {
-        if (objectManager.map.activeSelf)
+        if (ObjectManager.instance.map.activeSelf)
         {
             Debug.Log(rect.anchoredPosition.x);
             Debug.Log(rect.anchoredPosition.y);
