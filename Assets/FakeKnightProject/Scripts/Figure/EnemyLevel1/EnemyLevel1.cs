@@ -191,12 +191,12 @@ public class EnemyLevel1 : MonoBehaviour
                     Invoke("resetMove", 3f);
                 }
             }
-        }    
-        
+        }
+
         if (!isDie && blood <= 0f)
         {
             isDie = true;
-            if (photonView.IsMine)
+            if (PhotonNetwork.IsMasterClient)
             {
                 photonView.RPC("PlayAnimation", RpcTarget.All, "dealth");
                 Invoke("destroy", 0.7f);
@@ -233,32 +233,32 @@ public class EnemyLevel1 : MonoBehaviour
         else if (isSK4)
         {
             isSK4 = false;
-        }    
+        }
     }
     void resetSkill()
     {
-        if (GetComponent<PhotonView>().IsMine || PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.Destroy(cut);
         }
         // xử lí vấn đề all player bị mất máu
         //if (GetComponent<PhotonView>().IsMine)
         Invoke("resteTimeSkill", 2.4f);
-    }    
+    }
     void resteTimeSkill()
     {
         isSkill = false;
-    }    
+    }
     void resetMove()
     {
         rb.velocity = new Vector2(0, 0);
         photonView.RPC("PlayAnimation", RpcTarget.All, "idle");
         Invoke("resetRandom", 1f);
-    }    
+    }
     void resetRandom()
     {
         isRandom = false;
-    }    
+    }
     void destroy()
     {
         gameObject.SetActive(false);
@@ -270,8 +270,8 @@ public class EnemyLevel1 : MonoBehaviour
         {
             isEfect = true;
             player = collision.gameObject.GetComponent<PlayerMove>();
-        }    
-        if(collision.gameObject.CompareTag("arrow"))
+        }
+        if (collision.gameObject.CompareTag("arrow"))
         {
             photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
             isChoose = true;
@@ -285,7 +285,7 @@ public class EnemyLevel1 : MonoBehaviour
     void CloseBlood()
     {
         bl.SetActive(false);
-    }    
+    }
     public void setBloodEff()
     {
         if (!bl.activeSelf)

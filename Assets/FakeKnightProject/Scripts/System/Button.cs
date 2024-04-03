@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class Button : MonoBehaviour
 {
+    public void getFriendList()
+    {
+        ObjectManager.instance.friend.SetActive(!ObjectManager.instance.friend.activeSelf);
+    }
     public void getMails()
     {
         ObjectManager.instance.mails.SetActive(!ObjectManager.instance.mails.activeSelf);

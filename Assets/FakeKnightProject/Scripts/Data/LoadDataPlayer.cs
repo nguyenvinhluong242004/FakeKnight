@@ -30,6 +30,7 @@ public class LoadDataPlayer : MonoBehaviour
     {
         GetAppearance();
         getUserNamePlayer();
+        PlayfabFriendList.instance.UpdateFriend();
     }
     void getUserNamePlayer()
     {

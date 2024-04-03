@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using Photon.Realtime;
 using TMPro;
 
 public class PlayerMove : MonoBehaviour
@@ -50,14 +51,16 @@ public class PlayerMove : MonoBehaviour
             Debug.Log(GetComponent<PhotonView>().Owner.NickName + "own");
             string nickName = GetComponent<PhotonView>().Owner.NickName;
             string[] parts = nickName.Split('-');
-            if (parts.Length == 3)
+            if (parts.Length == 4)
             {
-                string name = parts[0].Trim();
-                int id = int.Parse(parts[1].Trim());
-                string playfabID = parts[2].Trim();
+                string displayname = parts[0].Trim();
+                string name = parts[1].Trim();
+                int id = int.Parse(parts[2].Trim());
+                string playfabID = parts[3].Trim();
                 Debug.Log("Name: " + name + "Id: " + id + "PlayfabID: " + playfabID);
                 textName.text = name;
                 setPlayer(id);
+                playerNameID.displayName = displayname;
                 playerNameID.nickName = name;
                 playerNameID.playfabID = playfabID;
             }
@@ -360,10 +363,15 @@ public class PlayerMove : MonoBehaviour
         sprite.color = new Color(1f, 1f, 1f, 1f);
     }
     [PunRPC]
-    void ReceiveMessage(string message)
+    void ReceiveMessage(string message, Player sender)
     {
-        // Xử lý tin nhắn nhận được tại đây
+        // Xử lý tin nhắn nhận được tại đâys
         Debug.Log("Received message: " + message);
-        PlayfabFriendManager.instance.addInvite(message);
+        PlayfabFriendManager.instance.addInvite(message, sender);
+    }
+    [PunRPC]
+    void AddFriend(string recipient)
+    {
+        PlayfabFriendManager.instance.addFriendPlayfabBySender(recipient);
     }
 }

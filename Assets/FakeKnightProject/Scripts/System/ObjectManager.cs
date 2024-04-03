@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ObjectManager : MonoBehaviour
 {
@@ -10,8 +11,9 @@ public class ObjectManager : MonoBehaviour
     [SerializeField] public bool isSound, isMusic;
     [SerializeField] public Sprite musicOn, musicOff;
     [SerializeField] public GameObject music, sound;
-    [SerializeField] public GameObject infor, shop, message, chat, emote, bag, removeEquip, inforItem, buy, notBuy, setting, map, gift, mails;
-    [SerializeField] public GameObject uiConnectFriend;
+    [SerializeField] public GameObject infor, shop, message, chat, emote, bag, removeEquip, inforItem, buy, notBuy, setting, map, gift, mails, friend;
+    [SerializeField] public GameObject uiConnectFriend, add, noAdd;
+    [SerializeField] public TMP_Text textUiConnectFriend;
     [SerializeField] public GameObject shopEquipment, shopAuxiliary, shopUpgrate, shopGeneral;
     [SerializeField] public Sprite greenImage, redImage, imgUseItem;
     [SerializeField] public GameObject pastButton, pastShop, pastMap;
@@ -41,6 +43,7 @@ public class ObjectManager : MonoBehaviour
     {
         shop.SetActive(false);
         mails.SetActive(false);
+        friend.SetActive(false);
         bag.SetActive(false);
         Debug.Log(positionPlayer.anchoredPosition);
     }

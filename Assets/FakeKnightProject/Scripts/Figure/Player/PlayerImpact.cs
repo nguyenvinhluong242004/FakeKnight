@@ -29,8 +29,8 @@ public class PlayerImpact : MonoBehaviour
         }    
         if (Input.GetMouseButtonDown(0))
         {
-            ObjUse.instance._blood.setBlood(blood);
-            ObjUse.instance._energy.setBlood(energy);
+            ObjUse.instance._blood.setBlood(ObjUse.instance.playerImpact.blood);
+            ObjUse.instance._energy.setBlood(ObjUse.instance.playerImpact.energy);
         }
     }
     void setHealing()
@@ -56,7 +56,7 @@ public class PlayerImpact : MonoBehaviour
     public void setEnergy(float k)
     {
         energy -= k;
-        ObjUse.instance._energy.setBlood(energy);
+        ObjUse.instance._energy.setBlood(ObjUse.instance.playerImpact.energy);
         ObjUse.instance.ene.text = $"{blood} / 100";
     }
 }

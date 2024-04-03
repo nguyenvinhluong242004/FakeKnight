@@ -28,6 +28,8 @@ public class PlayfabManager : MonoBehaviour
 
     void Start()
     {
+        userInput_Login.text = PlayerPrefs.GetString("Username");
+        passwordInput_Login.text = PlayerPrefs.GetString("Password");
         if (string.IsNullOrEmpty(PlayFabSettings.TitleId))
         {
             PlayFabSettings.TitleId = "5D9BF";
@@ -54,6 +56,8 @@ public class PlayfabManager : MonoBehaviour
     }
     void OnLoginSucess(LoginResult result)
     {
+        PlayerPrefs.SetString("Username", userInput_Login.text);
+        PlayerPrefs.SetString("Password", passwordInput_Login.text);
         messageText.text = "Loggin in!";
         Debug.Log("Loggin acount sucessful!");
         FindObjectOfType<SceneControl>().LoadScene("Play");

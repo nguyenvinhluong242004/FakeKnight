@@ -43,7 +43,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         Debug.Log(transform.name + ": Login " + playerName);
         PhotonNetwork.AutomaticallySyncScene = true;
         Debug.Log(PhotonNetwork.LocalPlayer.NickName);
-        PhotonNetwork.LocalPlayer.NickName = $"{LoadDataPlayer.instance.dataPlayer.name} - {LoadDataPlayer.instance.dataPlayer.idPlayer} - {LoadDataPlayer.instance.dataPlayer.PlayFabID}";
+        PhotonNetwork.LocalPlayer.NickName = $"{LoadDataPlayer.instance.namePlayer} - {LoadDataPlayer.instance.dataPlayer.name} - {LoadDataPlayer.instance.dataPlayer.idPlayer} - {LoadDataPlayer.instance.dataPlayer.PlayFabID}";
         PhotonNetwork.ConnectUsingSettings();
     }
     public override void OnJoinedLobby()
@@ -265,18 +265,19 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             string nickName = playerData.Value.NickName;
             Debug.Log(nickName);
             string[] parts = nickName.Split('-'); 
-            if (parts.Length == 3)
+            if (parts.Length == 4)
             {
-                string name = parts[0].Trim(); 
-                int id = int.Parse(parts[1].Trim());
-                string playfabID = parts[2].Trim();
+                string displayname = parts[0].Trim();
+                string name = parts[1].Trim(); 
+                int id = int.Parse(parts[2].Trim());
+                string playfabID = parts[3].Trim();
 
                 // Tạo một đối tượng PlayerProfile mới với name
                 playerProfile = new PlayerProfile
                 {
                     nickName = name
                 };
-                Debug.Log("Name: " + name + "Id: " + id + "PlayfabID: " + playfabID);
+                Debug.Log("Displayname: " + displayname + "Name: " + name + "Id: " + id + "PlayfabID: " + playfabID);
                 this.players.Add(playerProfile);
             }
         }
@@ -288,6 +289,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         player.GetComponent<PlayerMove>().setPlayer(LoadDataPlayer.instance.dataPlayer.idPlayer);
         ObjectManager.instance.imgProfile.sprite = ObjectManager.instance.imgPlayers[LoadDataPlayer.instance.dataPlayer.idPlayer];
         player.GetComponent<PlayerMove>().textName.text = LoadDataPlayer.instance.dataPlayer.name;
+        player.GetComponent<PlayerMove>().playerNameID.displayName = LoadDataPlayer.instance.namePlayer;
         player.GetComponent<PlayerMove>().playerNameID.nickName = LoadDataPlayer.instance.dataPlayer.name;
         player.GetComponent<PlayerMove>().playerNameID.playfabID = LoadDataPlayer.instance.dataPlayer.PlayFabID;
     }
