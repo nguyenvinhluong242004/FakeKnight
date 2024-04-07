@@ -50,6 +50,7 @@ MonoBehaviour:
   - UpdateStatusBloodRPC
   - SyncConstrain
   - AddFriend
+  - ReceivePrivateMessage
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

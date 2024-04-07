@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using Photon.Chat;
 using ExitGames.Client.Photon;
+using Photon.Pun;
 
 public class UiFriend : MonoBehaviour
 {
@@ -12,6 +13,13 @@ public class UiFriend : MonoBehaviour
     [SerializeField] public string id;
     [SerializeField] public string username;
     [SerializeField] public Image status;
+
+    public void getPPrivateChat()
+    {
+        PhotonChat.instance.setRecipient(nameFriend.text);
+        ObjectManager.instance.chatFriend.SetActive(true);
+        PhotonChat.instance.loadMessagePrivateChat();
+    }
 
     private void Start()
     {
@@ -40,12 +48,12 @@ public class UiFriend : MonoBehaviour
             if (isOnline)
             {
                 // Bạn bè đang trực tuyến
-                status.color = Color.green; // hoặc bất kỳ màu nào bạn muốn hiển thị
+                status.color = Color.red; // hoặc bất kỳ màu nào bạn muốn hiển thị
             }
             else
             {
                 // Bạn bè không trực tuyến
-                status.color = Color.red; // hoặc bất kỳ màu nào bạn muốn hiển thị
+                status.color = Color.green; // hoặc bất kỳ màu nào bạn muốn hiển thị
             }
         }
     }

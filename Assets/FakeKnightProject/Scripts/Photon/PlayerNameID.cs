@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
 using PlayFab;
 using System;
 using PlayFab.ClientModels;
@@ -11,11 +12,14 @@ public class PlayerNameID : MonoBehaviour
     public string playfabID;
     private void OnMouseDown()
     {
+        Player a = GetComponent<PhotonView>().Owner;
+        Debug.Log(a);
+
         Debug.Log("ID player: " + playfabID);
         if (playfabID != LoadDataPlayer.instance.playfabID)
         {
             bool check = false;
-            foreach (FriendInfo friend in PlayfabFriendList.instance.friendList)
+            foreach (PlayFab.ClientModels.FriendInfo friend in PlayfabFriendList.instance.friendList)
             {
                 if (string.Equals(displayName, friend.TitleDisplayName, StringComparison.OrdinalIgnoreCase))
                 {

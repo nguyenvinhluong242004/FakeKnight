@@ -20,7 +20,6 @@ public class PlayfabFriendManager : MonoBehaviour
     {
         if (instance == null)
             instance = this;
-        rect.sizeDelta = new Vector2(0, 450);
     }
     public void SendFriendRequest()
     {

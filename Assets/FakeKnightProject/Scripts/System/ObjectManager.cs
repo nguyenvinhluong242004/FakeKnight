@@ -13,6 +13,7 @@ public class ObjectManager : MonoBehaviour
     [SerializeField] public GameObject music, sound;
     [SerializeField] public GameObject infor, shop, message, chat, emote, bag, removeEquip, inforItem, buy, notBuy, setting, map, gift, mails, friend;
     [SerializeField] public GameObject uiConnectFriend, add, noAdd;
+    [SerializeField] public GameObject chatFriend;
     [SerializeField] public TMP_Text textUiConnectFriend;
     [SerializeField] public GameObject shopEquipment, shopAuxiliary, shopUpgrate, shopGeneral;
     [SerializeField] public Sprite greenImage, redImage, imgUseItem;

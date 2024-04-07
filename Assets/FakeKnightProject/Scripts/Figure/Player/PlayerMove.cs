@@ -370,6 +370,19 @@ public class PlayerMove : MonoBehaviour
         PlayfabFriendManager.instance.addInvite(message, sender);
     }
     [PunRPC]
+    void ReceivePrivateMessage(string message)
+    {
+        // Xử lý tin nhắn nhận được tại đâys
+        Debug.Log("Received message: " + message);
+        string[] parts = message.Split(".|.");
+        Debug.Log(parts[0]);
+        Debug.Log(playerNameID.displayName);
+        if (parts[0].Trim() == playerNameID.displayName)
+        {
+            PhotonChat.instance.setMessagePrivateReceive(parts[0].Trim(), parts[1].Trim(), parts[2].Trim());
+        }
+    }
+    [PunRPC]
     void AddFriend(string recipient)
     {
         PlayfabFriendManager.instance.addFriendPlayfabBySender(recipient);

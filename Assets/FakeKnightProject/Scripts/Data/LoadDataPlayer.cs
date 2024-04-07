@@ -41,6 +41,7 @@ public class LoadDataPlayer : MonoBehaviour
     {
         // get username
         namePlayer = result.PlayerProfile.DisplayName;
+        PhotonChat.instance.senderPlayer = namePlayer;
         string idPlayer = result.PlayerProfile.PlayerId;
         playfabID = idPlayer;
         dataPlayer.PlayFabID = idPlayer;

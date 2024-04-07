@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class Button : MonoBehaviour
 {
+    public void closeFriendPrivateChat()
+    {
+        ObjectManager.instance.chatFriend.SetActive(false);
+    }
     public void getFriendList()
     {
         ObjectManager.instance.friend.SetActive(!ObjectManager.instance.friend.activeSelf);
