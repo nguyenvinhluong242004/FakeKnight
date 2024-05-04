@@ -14,6 +14,10 @@ public class UiFriend : MonoBehaviour
     [SerializeField] public string username;
     [SerializeField] public Image status;
 
+    public void inviteFriendOnRoom()
+    {
+
+    }
     public void getPPrivateChat()
     {
         PhotonChat.instance.setRecipient(nameFriend.text);

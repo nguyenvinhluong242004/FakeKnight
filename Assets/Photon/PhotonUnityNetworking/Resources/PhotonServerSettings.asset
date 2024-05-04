@@ -51,6 +51,8 @@ MonoBehaviour:
   - SyncConstrain
   - AddFriend
   - ReceivePrivateMessage
+  - LeaveRoomForAllPlayers
+  - LeaveRoom
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

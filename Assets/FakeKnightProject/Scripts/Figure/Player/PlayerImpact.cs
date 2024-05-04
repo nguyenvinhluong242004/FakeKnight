@@ -50,6 +50,7 @@ public class PlayerImpact : MonoBehaviour
     public void setBlood(float k)
     {
         blood -= k;
+        if (blood > 1000f) blood = 1000f;
         ObjUse.instance._blood.setBlood(ObjUse.instance.playerImpact.blood);
         ObjUse.instance.bl.text = $"{ObjUse.instance.playerImpact.blood} / 1000";
     }

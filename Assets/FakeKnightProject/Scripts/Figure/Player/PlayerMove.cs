@@ -387,4 +387,9 @@ public class PlayerMove : MonoBehaviour
     {
         PlayfabFriendManager.instance.addFriendPlayfabBySender(recipient);
     }
+    [PunRPC]
+    void LeaveRoom()
+    {
+        PhotonManager.instance.LeaveRoomAll();
+    }
 }

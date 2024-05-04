@@ -12,11 +12,14 @@ public class LoadingGame : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _reset();
+    }
+    public void _reset()
+    {
         blood = 0f;
         reset = false;
         isDone = false;
     }
-
     // Update is called once per frame
     void Update()
     {

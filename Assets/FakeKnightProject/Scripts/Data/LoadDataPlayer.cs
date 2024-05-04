@@ -160,7 +160,8 @@ public class LoadDataPlayer : MonoBehaviour
     } 
     public void LogOut() // out game
     {
-        FindObjectOfType<SceneControl>().LoadScene("Login");
+        // left room
+        PhotonManager.instance.Leave(true);
     }
 
 }

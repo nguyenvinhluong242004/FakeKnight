@@ -7,6 +7,9 @@ using TMPro;
 public class ObjectManager : MonoBehaviour
 {
     [SerializeField] public static ObjectManager instance;
+    [SerializeField] public GameObject lobby;
+    [SerializeField] public GameObject buttonCloselobby;
+    [SerializeField] public GameObject scenePlay;
     [SerializeField] public AudioSource musicAudio;
     [SerializeField] public bool isSound, isMusic;
     [SerializeField] public Sprite musicOn, musicOff;

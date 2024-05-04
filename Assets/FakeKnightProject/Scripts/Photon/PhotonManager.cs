@@ -10,13 +10,17 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private DataUseLoadGame dataUseLoadGame; // script table object
     [SerializeField] private LoadingGame loadingGame;
-    [SerializeField] public string playerName, nameServer;
+    [SerializeField] public string playerName, nameServer, nameRoomPlay;
     [SerializeField] public int idServer;
     //public UiRoomProfile roomPrefab;
+    [SerializeField] private RectTransform rect;
+    [SerializeField] public GameObject contentRoom;
+    [SerializeField] private GameObject roomPrefab;
     public List<RoomInfo> updatedRooms;
     public List<NameServer> servers = new List<NameServer>();
     public List<PlayerNameID> playerIDs = new List<PlayerNameID>(); // do nothing
 
+    bool isOut; // check xem player muốn out phòng hay tài khoản
 
     public static PhotonManager instance;
     public string photonPlayer = "Player";
@@ -26,11 +30,17 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public string photonGuardsL = "GuardsL";
     public string photonGuardsR = "GuardsR";
     public List<PlayerProfile> players = new List<PlayerProfile>();
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+    }
     private void Start()
     {
         Login();
         playerName = LoadDataPlayer.instance.dataPlayer.name;
         nameServer = "SoSad";
+        isOut = false;
     }
     //Logout / Login
     public void Logout()
@@ -62,26 +72,58 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         //PhotonNetwork.LocalPlayer.NickName = LoadDataPlayer.instance.dataPlayer.name;
         PhotonNetwork.CreateRoom(nameServer);
     }
+    public void CreateRoomByName(string nameRoom)
+    {
+        nameRoomPlay = nameRoom;
+        Debug.Log(transform.name + ": Create server " + nameRoom);
+        PhotonNetwork.CreateRoom(nameRoom);
+    }
+    public void JoinRoomByName(string nameRoom)
+    {
+        if (!PhotonNetwork.InRoom)
+        {
+            Debug.Log(transform.name + ": Join room " + nameRoom);
+            //PhotonNetwork.LocalPlayer.NickName = LoadDataPlayer.instance.dataPlayer.name;
+            PhotonNetwork.JoinRoom(nameRoom);
+        }
+    }
     public virtual void Join()
     {
         Debug.Log(transform.name + ": Join room " + nameServer);
         //PhotonNetwork.LocalPlayer.NickName = LoadDataPlayer.instance.dataPlayer.name;
         PhotonNetwork.JoinRoom(nameServer);
     }
-    public virtual void Leave()
+    public virtual void Leave(bool _isOut)
     {
+        isOut = _isOut;
         Debug.Log(transform.name + ": Leave Room");
-        PhotonNetwork.LeaveRoom();
+        if (PhotonNetwork.InRoom)
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                ObjUse.instance.player.gameObject.GetComponent<PhotonView>().RPC("LeaveRoom", RpcTarget.All);
+            }
+            else
+                PhotonNetwork.LeaveRoom();
+        }
     }
+    public void LeaveRoomAll()
+    {
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+        }
+    }
+    
     public override void OnCreatedRoom()
     {
         Debug.Log("OnCreatedRoom");
         NameServer nameServer_ = new NameServer
         {
-            name = nameServer
+            name = nameRoomPlay
         };
         this.servers.Add(nameServer_);
-        //dataUseLoadGame.add(nameServer);
+        //dataUseLoadGame.add(nameRoomPlay);
         idServer = dataUseLoadGame.getIdServer(nameServer);
         // load enemy and NPC
         if (idServer >= 0)
@@ -122,11 +164,28 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         SpawnPlayer();
         loadingGame.isDonePhoton = true;
         if (loadingGame.isDone && loadingGame.isDonePhoton)
+        {
+            loadingGame.isDone = false;
             loadingGame.setLoadingGame(true);
+        }
+        ObjectManager.instance.lobby.SetActive(false);
+        ObjectManager.instance.scenePlay.SetActive(true);
     }
     public override void OnLeftRoom()
     {
         Debug.Log("OnLeftRoom");
+        if (isOut)
+        {
+            loadingGame._reset();
+            PhotonNetwork.Disconnect();
+            FindObjectOfType<SceneControl>().LoadScene("Login");
+        }
+        else
+        {
+            loadingGame._reset();
+            PhotonNetwork.Disconnect();
+            FindObjectOfType<SceneControl>().LoadScene("Play");
+        }
     }
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
@@ -137,12 +196,42 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         Debug.Log("OnRoomListUpdate");
         this.updatedRooms = roomList;
         Debug.Log("room created + add");
+        for (int i = 0; i < contentRoom.transform.childCount; i++)
+        {
+            // Lấy tham chiếu đến đối tượng con thứ i
+            GameObject childObject = contentRoom.transform.GetChild(i).gameObject;
+
+            // Hủy (destroy) đối tượng con
+            Destroy(childObject);
+        }
+        rect.sizeDelta = new Vector2(0, 435);
+
         foreach (RoomInfo roomInfo in roomList)
         {
             if (roomInfo.RemovedFromList) this.RoomRemove(roomInfo);
-            else this.RoomAdd(roomInfo);
+            else
+            {
+                Debug.Log("on update room");
+                this.RoomAdd(roomInfo);
+                GameObject uiRoom = Instantiate(roomPrefab, roomPrefab.transform.position, roomPrefab.transform.rotation);
+                uiRoom.transform.SetParent(contentRoom.transform);
+                rect.sizeDelta = new Vector2(0, rect.sizeDelta.y + 40f);
+
+                uiRoom.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                uiRoom.GetComponent<UiRoom>().nameRoom.text = roomInfo.Name;
+            }
         }
-        Invoke("setServerGame", 0.2f);
+        
+
+
+        loadingGame.isDonePhoton = true;
+
+        if (loadingGame.isDone && loadingGame.isDonePhoton)
+        {
+            loadingGame.isDone = false;
+            loadingGame.setLoadingGame(true);
+        }
+        //Invoke("setServerGame", 0.2f); // xxuwr lí tham gia room ở đây
     }
     void setServerGame()
     {
@@ -320,5 +409,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
                 Debug.Log(e.transform.position);
             }
         }    
-    }    
+    }
+
+    
 }

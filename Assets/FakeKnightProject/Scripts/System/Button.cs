@@ -5,6 +5,25 @@ using UnityEngine.UI;
 
 public class Button : MonoBehaviour
 {
+    public void getChallence()
+    {
+        if (!ObjectManager.instance.lobby.activeSelf)
+        {
+            ObjectManager.instance.lobby.SetActive(true);
+            ObjectManager.instance.buttonCloselobby.SetActive(true);
+        }
+        else
+        {
+            ObjectManager.instance.lobby.SetActive(false);
+        }
+    }
+    public void CloseChallence()
+    {
+        if (ObjectManager.instance.scenePlay.activeSelf)
+        {
+            ObjectManager.instance.lobby.SetActive(false);
+        }
+    }
     public void closeFriendPrivateChat()
     {
         ObjectManager.instance.chatFriend.SetActive(false);
