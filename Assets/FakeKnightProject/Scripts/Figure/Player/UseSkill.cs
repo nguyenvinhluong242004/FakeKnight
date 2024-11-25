@@ -6,15 +6,20 @@ using Photon.Pun;
 public class UseSkill : MonoBehaviour
 {
     [SerializeField] private PlayerMove playerMove;
+    [SerializeField] private PlayerImpact playerImpact;
     [SerializeField] private GameObject arrow;
     [SerializeField] public GameObject location;
     [SerializeField] public GameObject fire;
     [SerializeField] public GameObject fires;
     [SerializeField] public GameObject bem;
+    [SerializeField] public GameObject light_;
+    [SerializeField] public GameObject thunderbird;
     public string Location = "Location";
     public string Fire = "Violent Fire";
     public string Fires = "Fires";
     public string Bem = "Bem";
+    public string Light = "Light";
+    public string Thunderbird = "Thunderbird";
     public void getSkillOne()
     {
         if (playerMove.isD)
@@ -25,8 +30,33 @@ public class UseSkill : MonoBehaviour
             bem = PhotonNetwork.Instantiate(this.Bem, new Vector3(playerMove.transform.position.x - 0.6f, playerMove.transform.position.y, 0), Quaternion.Euler(0, 0, -90f));
         else
             bem = PhotonNetwork.Instantiate(this.Bem, new Vector3(playerMove.transform.position.x + 0.6f, playerMove.transform.position.y, 0), Quaternion.Euler(0, 0, 90f));
+        bem.gameObject.GetComponent<Bem>().player = playerMove;
         Invoke("resetSkill1", 1f);
     }   
+    public void getSkillLight(Vector2 direction)
+    {
+        playerImpact.changeEnergy(20f, false);
+        playerMove.isSkill = true;
+        ObjUse.instance._sk2.isOn = true; 
+        ObjUse.instance._sk2.timeSkill();
+        playerMove.twoSkill = true;
+        light_ = PhotonNetwork.Instantiate(this.Light, new Vector3(playerMove.transform.position.x + direction.x, playerMove.transform.position.y + direction.y, 0), Quaternion.Euler(0, 0, 0));
+        light_.gameObject.GetComponent<SkillLight>().setSkillLight(direction);
+        light_.gameObject.GetComponent<SkillLight>().player = playerMove;
+        Invoke("resetSkillLight", 1f);
+    }
+    public void getSkillThunderbird(Vector2 direction)
+    {
+        playerImpact.changeEnergy(30f, false);
+        playerMove.isSkill = true;
+        ObjUse.instance._sk3.isOn = true;
+        ObjUse.instance._sk3.timeSkill();
+        playerMove.threeSkill = true;
+        thunderbird = PhotonNetwork.Instantiate(this.Thunderbird, new Vector3(playerMove.transform.position.x, playerMove.transform.position.y, 0), Quaternion.Euler(0, 0, 0));
+        thunderbird.gameObject.GetComponent<SkillThunderbird>().setSkillThunderbird(direction);
+        thunderbird.gameObject.GetComponent<SkillThunderbird>().player = playerMove;
+        Invoke("resetSkillThunderbird", 4f);
+    }
     public void getSkill()
     {
         playerMove.worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -99,7 +129,24 @@ public class UseSkill : MonoBehaviour
         {
             PhotonNetwork.Destroy(bem);
         }
-    }    
+    }
+     void resetSkillThunderbird()
+    {
+        playerMove.isSkill = false;
+        if (GetComponent<PhotonView>().IsMine || PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.Destroy(thunderbird);
+        }
+    }
+    void resetSkillLight()
+    {
+        playerMove.isSkill = false;
+        if (GetComponent<PhotonView>().IsMine || PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.Destroy(light_);
+        }
+    }
+    
     void resetLocation()
     {
         //gameObject.SetActive(true);
@@ -136,7 +183,6 @@ public class UseSkill : MonoBehaviour
         playerMove.isSkill = false;
         //playerMove.fourSkill = false;
     }
-
     public void resetSkill()
     {
         playerMove.isSkill = false;

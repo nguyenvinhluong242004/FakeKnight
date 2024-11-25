@@ -10,5 +10,7 @@ public class UiInforItem : MonoBehaviour
     [SerializeField] public TMP_Text damage;
     [SerializeField] public TMP_Text resist;
     [SerializeField] public TMP_Text healing;
+    [SerializeField] public TMP_Text speed;
+    [SerializeField] public TMP_Text time;
     [SerializeField] public TMP_Text infor;
 }

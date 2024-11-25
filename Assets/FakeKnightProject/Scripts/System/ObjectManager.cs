@@ -7,8 +7,9 @@ using TMPro;
 public class ObjectManager : MonoBehaviour
 {
     [SerializeField] public static ObjectManager instance;
+    [SerializeField] public int language; //0: English, 1: VietNam
     [SerializeField] public GameObject lobby;
-    [SerializeField] public GameObject buttonCloselobby;
+    [SerializeField] public GameObject leaveGame;
     [SerializeField] public GameObject scenePlay;
     [SerializeField] public AudioSource musicAudio;
     [SerializeField] public bool isSound, isMusic;
@@ -50,5 +51,6 @@ public class ObjectManager : MonoBehaviour
         friend.SetActive(false);
         bag.SetActive(false);
         Debug.Log(positionPlayer.anchoredPosition);
+        //language = 1;
     }
 }

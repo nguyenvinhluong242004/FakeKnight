@@ -19,6 +19,9 @@ public class ControlGameOnLobby : MonoBehaviour
     [SerializeField] private GameObject friendLisst;
     [SerializeField] private Image friendLisstButton;
     [SerializeField] private GameObject roomLisst;
+    [SerializeField] private GameObject sceneBefore;
+    //[SerializeField] private GameObject scenePlay;
+    //[SerializeField] private GameObject sceneAfter;
     [SerializeField] private Image roomLisstButton;
     public List<FriendInfo> friendList;
 
@@ -40,9 +43,13 @@ public class ControlGameOnLobby : MonoBehaviour
         PhotonManager.instance.CreateRoomByName(nameRoom.text);
         //  xử lí chỗ render ra quaiis , npc, nhan vật
         // mục đích : chỉ tạo room, không tạo nhân vật ( tạo quái ... )
+        //sceneBefore.SetActive(false);
+        //sceneAfter.SetActive(true);
     }
     public void getListFriend()
     {
+        if (!gameObject)
+            return;
         roomLisst.SetActive(false);
         roomLisstButton.color = new Color(0.5f, 0.5f, 0.5f, 1);
         friendLisst.SetActive(true);
@@ -91,9 +98,5 @@ public class ControlGameOnLobby : MonoBehaviour
         friendLisstButton.color = new Color(0.5f, 0.5f, 0.5f, 1);
         roomLisst.SetActive(true);
         roomLisstButton.color = new Color(1, 1, 1, 1);
-    }
-    public void leaveRoom()
-    {
-        PhotonManager.instance.Leave(false);
     }
 }

@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blBGR: {fileID: 6041314980757250209}
   bl: {fileID: 6041314980594337545}
-  limitBl: 20
+  limitBl: 50
   po: 0.6
 --- !u!1 &6041314979540049397
 GameObject:
@@ -209,9 +209,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba831baa53a180540857ed3a70957533, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 1
+  gold: 32
   photonView: {fileID: 6041314979540049376}
-  blood: 20
+  blood: 50
+  bloodDefault: 0
   isEfect: 0
+  isEfectSkillBem: 0
   isDie: 0
   isRandom: 0
   isSkill: 0
@@ -222,6 +226,7 @@ MonoBehaviour:
   bl: {fileID: 6041314978999830378}
   cut: {fileID: 0}
   Cut: Cut
+  ValueDamage: ValueDamage
   spr: {fileID: 6041314979540049399}
   rb: {fileID: 6041314979540049388}
   player: {fileID: 0}

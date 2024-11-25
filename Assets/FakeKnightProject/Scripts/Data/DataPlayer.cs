@@ -73,5 +73,6 @@ public class DataPlayer : MonoBehaviour
         equipments = dataGame.equipments;
         gift = dataGame.gift;
         day = dataGame.day;
+        //LoadDataPlayer.instance.loadingGame.textNote.text = "copy data sucess!";
     }
 }

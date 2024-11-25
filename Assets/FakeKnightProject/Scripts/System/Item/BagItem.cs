@@ -84,6 +84,7 @@ public class BagItem : MonoBehaviour
             {
                 Debug.Log("setEquip");
                 bool check = false;
+                // chưa xuwwr lí check trùng giáp?
                 for (int i=0; i<8; i++)
                     if (LoadDataPlayer.instance.dataPlayer.equipments[i] == ObjectManager.instance.bagItem.key)
                     {
@@ -100,6 +101,11 @@ public class BagItem : MonoBehaviour
                     key = ObjectManager.instance.bagItem.key;
                     type = ObjectManager.instance.bagItem.type;
                     img = ObjectManager.instance.bagItem.img;
+
+                    float _damage = InformationItem.instance.data[ObjectManager.instance.bagItem.shop, ObjectManager.instance.bagItem.key].damage;
+                    float _resist = InformationItem.instance.data[ObjectManager.instance.bagItem.shop, ObjectManager.instance.bagItem.key].resist;
+                    float _speed = InformationItem.instance.data[ObjectManager.instance.bagItem.shop, ObjectManager.instance.bagItem.key].speed;
+                    ObjUse.instance.changePercent(_damage, _resist, _speed, "add");
 
                     if (isUse)
                     {

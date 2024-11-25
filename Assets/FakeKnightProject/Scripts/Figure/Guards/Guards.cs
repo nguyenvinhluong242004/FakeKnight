@@ -70,7 +70,7 @@ public class Guards : MonoBehaviour
             else
                 photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, false);
             // Di chuyển lính canh theo vectơ hướng với tốc độ đã đặt
-            transform.position = Vector2.MoveTowards(currentPos, currentPos + direction, 1f * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(currentPos, currentPos + direction, 2f * Time.deltaTime);
             photonView.RPC("PlayAnimation", RpcTarget.All, "run");
         }
     }
@@ -83,7 +83,7 @@ public class Guards : MonoBehaviour
         }   
         else if (!isOn && collision.CompareTag("Enemy")) // có quái đi khỏi phạm vi cho phép
         {
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            //rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             Debug.Log("enemy");
             isOn = true;
             isStart = false;

@@ -8,6 +8,7 @@ public class LoadingGame : MonoBehaviour
     [SerializeField] private GameObject bgrLoad, load;
     [SerializeField] private float blood, p;
     [SerializeField] private TMP_Text persent;
+    [SerializeField] public TMP_Text textNote;
     public bool reset, isDone, isDonePhoton;
     // Start is called before the first frame update
     void Start()
@@ -28,7 +29,7 @@ public class LoadingGame : MonoBehaviour
             setLoadingGame(false);
             reset = true;
             Invoke("resetLoad", Time.deltaTime);
-        }    
+        }
     }
     public void setLoadingGame(bool type)
     {

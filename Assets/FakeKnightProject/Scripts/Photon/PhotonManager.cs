@@ -46,7 +46,16 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public void Logout()
     {
         Debug.Log(transform.name + ": Logout ");
-        PhotonNetwork.Disconnect();
+        if (PhotonNetwork.InRoom)
+        {
+            Leave(true);
+        }
+        else
+        {
+            loadingGame._reset();
+            PhotonNetwork.Disconnect();
+            FindObjectOfType<SceneControl>().LoadScene("Login");
+        }
     }
     public void Login()
     {
@@ -95,16 +104,22 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     }
     public virtual void Leave(bool _isOut)
     {
-        isOut = _isOut;
         Debug.Log(transform.name + ": Leave Room");
+        isOut = _isOut;
         if (PhotonNetwork.InRoom)
         {
-            if (PhotonNetwork.IsMasterClient)
+            //if (PhotonNetwork.IsMasterClient)
+            //{
+            //    ObjUse.instance.player.gameObject.GetComponent<PhotonView>().RPC("LeaveRoom", RpcTarget.All);
+            //}
+            //else
+
+            if (PhotonNetwork.CurrentRoom.Players.Count > 1)
             {
-                ObjUse.instance.player.gameObject.GetComponent<PhotonView>().RPC("LeaveRoom", RpcTarget.All);
+                Debug.Log("set master");
+                PhotonNetwork.SetMasterClient(PhotonNetwork.PlayerListOthers[0]);
             }
-            else
-                PhotonNetwork.LeaveRoom();
+            PhotonNetwork.LeaveRoom();
         }
     }
     public void LeaveRoomAll()
@@ -130,37 +145,37 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             foreach (Vector3 _po in dataUseLoadGame.ServersData[idServer].dataInServers.enemySlimePositions)
             {
-                GameObject p = PhotonNetwork.Instantiate(this.photonSlime, _po, Quaternion.identity);
+                GameObject p = PhotonNetwork.InstantiateRoomObject(this.photonSlime, _po, Quaternion.identity, 0);
             }
             foreach (Vector3 _po in dataUseLoadGame.ServersData[idServer].dataInServers.enemyDevilPositions)
             {
-                GameObject p = PhotonNetwork.Instantiate(this.photonDevil, _po, Quaternion.identity);
+                GameObject p = PhotonNetwork.InstantiateRoomObject(this.photonDevil, _po, Quaternion.identity, 0);
             }
             foreach (Vector3 _po in dataUseLoadGame.ServersData[idServer].dataInServers.NPCPositions)
             {
-                GameObject p = PhotonNetwork.Instantiate(this.photonOldMan, _po, Quaternion.identity);
+                GameObject p = PhotonNetwork.InstantiateRoomObject(this.photonOldMan, _po, Quaternion.identity, 0);
                 p.GetComponent<FigureMessage>().message = ObjUse.instance.messageOldMan;
             }
             foreach (Vector3 _po in dataUseLoadGame.ServersData[idServer].dataInServers.NPCKillPositionsL)
             {
-                GameObject p = PhotonNetwork.Instantiate(this.photonGuardsL, _po, Quaternion.identity);
+                GameObject p = PhotonNetwork.InstantiateRoomObject(this.photonGuardsL, _po, Quaternion.identity, 0);
             }
             foreach (Vector3 _po in dataUseLoadGame.ServersData[idServer].dataInServers.NPCKillPositionsR)
             {
-                GameObject p = PhotonNetwork.Instantiate(this.photonGuardsR, _po, Quaternion.identity);
+                GameObject p = PhotonNetwork.InstantiateRoomObject(this.photonGuardsR, _po, Quaternion.identity, 0);
             }
             //dataUseLoadGame.ServersData[idServer].dataInServers.enemySlimePositions[0] = new Vector3(0, 0, 0);
-        }    
-        
-        //Update data in server // update sau
-        //loadingGame.isDonePhoton = true;
-        //if (loadingGame.isDone && loadingGame.isDonePhoton)
-        //    loadingGame.setLoadingGame(true);
+        }
+        //ObjectManager.instance.lobby.SetActive(false);
+        //ObjectManager.instance.scenePlay.SetActive(true);
     }
     public override void OnJoinedRoom()
     {
-        Debug.Log("OnJoinedRoom"); 
+        Debug.Log("OnJoinedRoom");
         LoadRoomPlayers();
+        Debug.Log("so player hien tai: " + PhotonNetwork.CurrentRoom.Players.Count);
+        
+
         SpawnPlayer();
         loadingGame.isDonePhoton = true;
         if (loadingGame.isDone && loadingGame.isDonePhoton)
@@ -226,11 +241,14 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 
         loadingGame.isDonePhoton = true;
 
+        //loadingGame.textNote.text = "loadgame.isdonePhoton";
+
         if (loadingGame.isDone && loadingGame.isDonePhoton)
         {
             loadingGame.isDone = false;
             loadingGame.setLoadingGame(true);
         }
+
         //Invoke("setServerGame", 0.2f); // xxuwr lí tham gia room ở đây
     }
     void setServerGame()
@@ -308,39 +326,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             this.LoadPlayerPrefab();
             return;
         }
-        //int playerCount = PhotonNetwork.CurrentRoom.Players.Count;
-        //Debug.Log(playerCount);
-        //foreach (KeyValuePair<int, Player> playerData in PhotonNetwork.CurrentRoom.Players)
-        //{
-        //    int id = -1;
-        //    string _name = "";
-        //    string nickName = playerData.Value.NickName;
-        //    string[] parts = nickName.Split('-'); // Tách chuỗi thành hai phần dựa trên dấu gạch ngang "-"
-        //    if (parts.Length == 2)
-        //    {
-        //        _name = parts[0].Trim(); // Lấy phần đầu tiên và loại bỏ khoảng trắng xung quanh
-        //        id = int.Parse(parts[1].Trim()); // Lấy phần thứ hai và chuyển đổi sang số nguyên
-        //    }
-        //    if (_name != LoadDataPlayer.instance.dataPlayer.name)
-        //    {
-        //        Debug.Log("trong vong for");
-        //        // Spawn playerPrefab tương ứng
-        //        GameObject playerr = PhotonNetwork.Instantiate(this.photonPlayer, Vector3.zero, Quaternion.identity);
-        //        Debug.Log("id player " + id);
-        //        playerr.GetComponent<PlayerMove>().setPlayer(id);
-        //        playerr.GetComponent<PlayerMove>().textName.text = name;
-        //    }    
-            
-        //    //playerr.transform.localScale = new Vector3(1, 1, 1); 
-        //}
-        // xử lí id: chua
-        //GameObject playerObj;
-        //if (LoadDataPlayer.instance.dataPlayer.idPlayer == 0)
-        //    playerObj = Resources.Load(this.photonPlayer0) as GameObject;
-        //else
-        //    playerObj = Resources.Load(this.photonPlayer1) as GameObject;
-        //GameObject player = Instantiate(playerObj, Vector3.zero, Quaternion.identity);
-        //player.transform.localScale = new Vector3(1, 1, 1);
     }
 
 
@@ -381,6 +366,10 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         player.GetComponent<PlayerMove>().playerNameID.displayName = LoadDataPlayer.instance.namePlayer;
         player.GetComponent<PlayerMove>().playerNameID.nickName = LoadDataPlayer.instance.dataPlayer.name;
         player.GetComponent<PlayerMove>().playerNameID.playfabID = LoadDataPlayer.instance.dataPlayer.PlayFabID;
+        // xử lí lấy trang bị
+        // từ playerimpact của player: bắt đầu tính toán các giá trị % trị số...
+        player.GetComponent<PlayerImpact>().setPercent();
+
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {

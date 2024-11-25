@@ -36,9 +36,41 @@ public class ObjUse : MonoBehaviour
     [SerializeField] public DataPlayer dataPlayer;
     [SerializeField] public MoneyPlayer moneyPlayer;
     [SerializeField] public TMP_Text messageOldMan;
+    [SerializeField] public float damageTotal;
+    [SerializeField] public float resistanceTotal;
+    [SerializeField] public float speedTotal;
+    [SerializeField] public TMP_Text exp;
+    [SerializeField] public TMP_Text damage;
+    [SerializeField] public TMP_Text resistance;
+    [SerializeField] public TMP_Text speed;
     private void Awake()
     {
         if (instance == null)
             instance = this;
+        damageTotal = 0f;
+        resistanceTotal = 0f;
+        speedTotal = 0f;
+    }
+    public void setTextPercent()
+    {
+        damage.text = "Damage: " + ((int)damageTotal).ToString() + "%";
+        resistance.text = "Resistance: " + ((int)resistanceTotal).ToString() + "%";
+        speed.text = "Speed: " + ((int)speedTotal).ToString() + "%";
+    }
+    public void changePercent(float _damage, float _resist, float _speed, string status)
+    {
+        if (status == "add")
+        {
+            damageTotal += _damage;
+            resistanceTotal += _resist;
+            speedTotal += _speed;
+        }
+        else
+        {
+            damageTotal -= _damage;
+            resistanceTotal -= _resist;
+            speedTotal -= _speed;
+        }
+        setTextPercent();
     }
 }

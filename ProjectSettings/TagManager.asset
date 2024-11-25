@@ -10,6 +10,9 @@ TagManager:
   - buttonBagItem
   - arrow
   - Enemy
+  - Thunderbird
+  - Light
+  - Bem
   layers:
   - Default
   - TransparentFX
@@ -97,6 +100,12 @@ TagManager:
     locked: 0
   - name: skill
     uniqueID: 399913803
+    locked: 0
+  - name: name
+    uniqueID: 3326667317
+    locked: 0
+  - name: valueDamage
+    uniqueID: 1647942393
     locked: 0
   - name: Canvas
     uniqueID: 2913252125

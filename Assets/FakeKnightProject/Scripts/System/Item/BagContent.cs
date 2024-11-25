@@ -10,6 +10,7 @@ public class BagContent : MonoBehaviour
     public GameObject[] itemBag;
     [SerializeField] public GameObject item, line;
     [SerializeField] private GameObject uiBag; 
+    [SerializeField] private LoadingGame loading; 
 
     // Start is called before the first frame update
     void Start()
@@ -82,9 +83,11 @@ public class BagContent : MonoBehaviour
             Destroy(lineItem[lineItem.Length - 1]);
             System.Array.Resize(ref lineItem, lineItem.Length - 1);
         }
+        gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(gameObject.GetComponent<RectTransform>().sizeDelta.x, lineItem.Length * 97f);
     }
     public void initBagItem(int shop, int key, int count, int type, Sprite img)
     {
+        loading.textNote.text = "1";
         int countLine = lineItem.Length;
         int countBagItem = itemBag.Length;
         int idx = countBagItem;
@@ -100,6 +103,7 @@ public class BagContent : MonoBehaviour
                 }
             }
         }
+        loading.textNote.text = "2";
         Debug.Log(idx);
         if (idx == countBagItem)
         {
@@ -113,6 +117,8 @@ public class BagContent : MonoBehaviour
                 lineItem[countLine] = _line;
                 _line.transform.localScale = new Vector3(1f, 1f, 1f);
             }
+
+            loading.textNote.text = "3";
             GameObject _item = Instantiate(item, item.transform.position, item.transform.rotation);
             //_item.transform.SetParent(lineItem[countLine - 1].transform);
             _item.transform.SetParent(lineItem[lineItem.Length - 1].transform);
@@ -130,6 +136,8 @@ public class BagContent : MonoBehaviour
                     child.GetComponent<Image>().sprite = img;
                 }
             }
+
+            loading.textNote.text = "4";
             _item.transform.localScale = new Vector3(1f, 1f, 1f);
             GameObject[] buttonBagItem = GameObject.FindGameObjectsWithTag("buttonBagItem");
             foreach (GameObject k in buttonBagItem)
@@ -144,11 +152,17 @@ public class BagContent : MonoBehaviour
                     }
                 }
             }
+
+            loading.textNote.text = "5";
         }
         else
         {
             itemBag[idx].GetComponent<BagItem>().count.text = $"{int.Parse(itemBag[idx].GetComponent<BagItem>().count.text) + 1}";
-        }
 
+            loading.textNote.text = "6";
+        }
+        gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(gameObject.GetComponent<RectTransform>().sizeDelta.x, lineItem.Length * 97f);
+
+        loading.textNote.text = "7";
     }
 }

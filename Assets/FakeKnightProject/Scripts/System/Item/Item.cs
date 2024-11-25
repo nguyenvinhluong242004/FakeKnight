@@ -14,26 +14,37 @@ public class Item : MonoBehaviour
     [SerializeField] private float damage;
     [SerializeField] private float resist;
     [SerializeField] private float healing;
+    [SerializeField] private float speed;
+    [SerializeField] private float time;
     [SerializeField] private TMP_Text name_, price;
     [SerializeField] private Image imgItem;
     [SerializeField] private Image imgMoney;
     [SerializeField] private InformationItem information;
+    string[] nameItem;
+    string[] propertiesItem;
+    string[] _inforItem;
     void Start()
     {
         information = FindObjectOfType<InformationItem>();
-        information.getItem(shop, key, ref _name, ref _price, ref type, ref properties, ref infor, ref damage, ref resist, ref healing);
+        information.getItem(shop, key, ref _name, ref _price, ref type, ref properties, ref infor, ref damage, ref resist, ref healing, ref speed, ref time);
+
+        nameItem = _name.Split(':');
+        propertiesItem = properties.Split(':');
+        _inforItem = infor.Split(':');
+
         Debug.Log($"{shop}, {key}");
         Debug.Log(price);
         if (price)
             price.text = _price.ToString();
         if (name_)
-            name_.text = _name;
+            name_.text = nameItem[ObjectManager.instance.language];
     }
     public void getItem()
     {
         Debug.Log("getItem");
         Debug.Log($"{shop}, {key}");
-        ObjectManager.instance.uiBuy._name.text = _name;
+
+        ObjectManager.instance.uiBuy._name.text = nameItem[ObjectManager.instance.language];
 
         ObjectManager.instance.notBuy.SetActive(false);
         ObjectManager.instance.inforItem.SetActive(false);
@@ -47,12 +58,15 @@ public class Item : MonoBehaviour
     {
         Debug.Log("getInforItem");
         Debug.Log($"{shop}, {key}");
-        ObjectManager.instance.uiInforItem._name.text = _name;
-        ObjectManager.instance.uiInforItem.properties.text = properties;
+        
+        ObjectManager.instance.uiInforItem._name.text = nameItem[ObjectManager.instance.language];
+        ObjectManager.instance.uiInforItem.properties.text = propertiesItem[ObjectManager.instance.language];
         ObjectManager.instance.uiInforItem.damage.text = damage.ToString();
         ObjectManager.instance.uiInforItem.resist.text = resist.ToString();
         ObjectManager.instance.uiInforItem.healing.text = healing.ToString();
-        ObjectManager.instance.uiInforItem.infor.text = infor.ToString();
+        ObjectManager.instance.uiInforItem.speed.text = speed.ToString();
+        ObjectManager.instance.uiInforItem.time.text = time.ToString();
+        ObjectManager.instance.uiInforItem.infor.text = _inforItem[ObjectManager.instance.language];
 
         ObjectManager.instance.buy.SetActive(false);
         ObjectManager.instance.notBuy.SetActive(false);
@@ -67,7 +81,7 @@ public class Item : MonoBehaviour
         if (ObjectManager.instance.item != null)
         {
             Debug.Log(ObjectManager.instance.objUse.moneyPlayer);
-            if (!ObjectManager.instance.objUse.moneyPlayer.isEnough(
+            if (!LoadDataPlayer.instance.isEnough(
                 int.Parse(ObjectManager.instance.item.price.text),
                 ObjectManager.instance.item.type,
                 ObjectManager.instance.item.shop,

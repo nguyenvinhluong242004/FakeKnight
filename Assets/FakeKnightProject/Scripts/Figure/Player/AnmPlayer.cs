@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
@@ -17,7 +17,7 @@ public class AnmPlayer : MonoBehaviour
             {
                 if (playerMove.sprite.flipX)
                     playerMove.sprite.flipX = !playerMove.sprite.flipX;
-                anm.Play("runLR");
+                anm.Play("run");
                 playerMove.isLR = true;
                 playerMove.isUD = false;
                 playerMove.isU = false;
@@ -27,7 +27,7 @@ public class AnmPlayer : MonoBehaviour
             {
                 if (!playerMove.sprite.flipX)
                     playerMove.sprite.flipX = !playerMove.sprite.flipX;
-                anm.Play("runLR");
+                anm.Play("run");
                 playerMove.isLR = true;
                 playerMove.isUD = false;
                 playerMove.isU = false;
@@ -41,7 +41,7 @@ public class AnmPlayer : MonoBehaviour
 
             if (playerMove.verticalInput > 0.01f)
             {
-                anm.Play("runBehind");
+                anm.Play("run");
                 playerMove.isUD = true;
                 playerMove.isU = true;
                 playerMove.isD = false;
@@ -49,7 +49,7 @@ public class AnmPlayer : MonoBehaviour
             }
             else if (playerMove.verticalInput < -0.01f)
             {
-                anm.Play("runFront");
+                anm.Play("run");
                 playerMove.isUD = true;
                 playerMove.isD = true;
                 playerMove.isU = false;
@@ -62,18 +62,13 @@ public class AnmPlayer : MonoBehaviour
 
             if (!playerMove.isLR && !playerMove.isUD)
             {
-                if (playerMove.isU)
-                    anm.Play("idleBehind");
-                else if (playerMove.isD)
-                    anm.Play("idleFront");
-                else
-                    anm.Play("idleLR");
+                anm.Play("idle");
             }
         }
     }
     public void UpdateAnimationMobile()
     {
-        if (!playerMove.isSkill)
+        //if (!playerMove.isSkill) // fix khi tung chiêu vẫn di chuyển được
         {
             if (playerMove.velocity_.x > 0.01f && Mathf.Abs(playerMove.velocity_.x) >= 0.4f)
             {
@@ -81,7 +76,7 @@ public class AnmPlayer : MonoBehaviour
                     photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, !playerMove.sprite.flipX);
                     //playerMove.sprite.flipX = !playerMove.sprite.flipX;
                 //anm.Play("runLR");
-                photonView.RPC("PlayAnimation", RpcTarget.All, "runLR");
+                photonView.RPC("PlayAnimation", RpcTarget.All, "run");
                 playerMove.isLR = true;
                 playerMove.isUD = false;
                 playerMove.isU = false;
@@ -93,7 +88,7 @@ public class AnmPlayer : MonoBehaviour
                     photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, !playerMove.sprite.flipX);
                     //playerMove.sprite.flipX = !playerMove.sprite.flipX;
                 //anm.Play("runLR");
-                photonView.RPC("PlayAnimation", RpcTarget.All, "runLR");
+                photonView.RPC("PlayAnimation", RpcTarget.All, "run");
                 playerMove.isLR = true;
                 playerMove.isUD = false;
                 playerMove.isU = false;
@@ -108,7 +103,7 @@ public class AnmPlayer : MonoBehaviour
             if (playerMove.velocity_.y > 0.01f && Mathf.Abs(playerMove.velocity_.x) < 0.4f)
             {
                 //anm.Play("runBehind");
-                photonView.RPC("PlayAnimation", RpcTarget.All, "runBehind");
+                photonView.RPC("PlayAnimation", RpcTarget.All, "run");
                 playerMove.isUD = true;
                 playerMove.isU = true;
                 playerMove.isD = false;
@@ -117,7 +112,7 @@ public class AnmPlayer : MonoBehaviour
             else if (playerMove.velocity_.y < -0.01f && Mathf.Abs(playerMove.velocity_.x) < 0.4f)
             {
                 //anm.Play("runFront");
-                photonView.RPC("PlayAnimation", RpcTarget.All, "runFront");
+                photonView.RPC("PlayAnimation", RpcTarget.All, "run");
                 playerMove.isUD = true;
                 playerMove.isD = true;
                 playerMove.isU = false;
@@ -131,21 +126,7 @@ public class AnmPlayer : MonoBehaviour
 
             if (!playerMove.isLR && !playerMove.isUD)
             {
-                if (playerMove.isU)
-                {
-                    //anm.Play("idleBehind");
-                    photonView.RPC("PlayAnimation", RpcTarget.All, "idleBehind");
-                }    
-                else if (playerMove.isD)
-                {
-                    //anm.Play("idleFront");
-                    photonView.RPC("PlayAnimation", RpcTarget.All, "idleFront");
-                }
-                else
-                {
-                    //anm.Play("idleLR");
-                    photonView.RPC("PlayAnimation", RpcTarget.All, "idleLR");
-                }
+                 photonView.RPC("PlayAnimation", RpcTarget.All, "idle");
             }
         }
         //else if (playerMove.isChooseSk1)

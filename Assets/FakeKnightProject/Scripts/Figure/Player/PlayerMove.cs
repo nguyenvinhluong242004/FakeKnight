@@ -28,11 +28,15 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] public bool oneSkill, twoSkill, threeSkill, fourSkill;
     [SerializeField] public bool isChooseSk1, isChooseSk2, isChooseSk3, isChooseSk4;
     [SerializeField] private Joytick joytick;
+    [SerializeField] private GameObject direction;
+    Vector2 directionSkill; // hướng cho skill light
     [SerializeField] public PlayerImpact playerImpact;
+    [SerializeField] public MoneyPlayer moneyPlayer;
     public Vector3 worldPosition;
     Vector3 k, kk;
     public Vector2 velocity_;
     private Vector2 startingPoint;
+    private Vector2 startingSkill;
     public Vector3 pastPlayer;
     int leftTouch = 99;
     int rightTouch = 99;
@@ -110,54 +114,96 @@ public class PlayerMove : MonoBehaviour
                         }
                         else if (!twoSkill && touchPos.x > ObjUse.instance.sk2.position.x - 0.6f && touchPos.x < ObjUse.instance.sk2.position.x + 0.6f && touchPos.y > ObjUse.instance.sk2.position.y - 0.6f && touchPos.y < ObjUse.instance.sk2.position.y + 0.6f)
                         {
-                            Debug.Log("use skill 2!");
-                            if (isChooseSk2)
+                            if (playerImpact.getEnergy() > 20f)
                             {
-                                isSkill = false;
-                                ObjUse.instance._sk2.ResetSK();
-                                ObjUse.instance.scanner.SetActive(false);
-                                isChooseSk2 = false;
-                            }
-                            else
-                            {
+                                rightTouch = t.fingerId;
+                                startingSkill = touchPos;
+
                                 isChooseSk2 = true;
-                                useSkill.setSkill2();
+
+                                Vector2 posSk2 = ObjUse.instance.sk2.transform.position;
+                                Debug.Log(ObjUse.instance.sk2.transform.position);
+
+                                directionSkill = Vector2.ClampMagnitude(touchPos - posSk2, 1f);
+
+                                float angleRadians = Mathf.Atan2(directionSkill.y, directionSkill.x);
+                                float angleDegrees = angleRadians * Mathf.Rad2Deg - 90f;
+
+                                Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, angleDegrees));
+                                direction.transform.rotation = rotation;
+
+
+
+
+
+                                //Debug.Log("use skill 2!");
+                                //if (isChooseSk2)
+                                //{
+                                //    isSkill = false;
+                                //    ObjUse.instance._sk2.ResetSK();
+                                //    ObjUse.instance.scanner.SetActive(false);
+                                //    isChooseSk2 = false;
+                                //}
+                                //else
+                                //{
+                                //    isChooseSk2 = true;
+                                //    useSkill.setSkill2();
+                                //}
                             }
                         }
                         else if (!threeSkill && touchPos.x > ObjUse.instance.sk3.position.x - 0.6f && touchPos.x < ObjUse.instance.sk3.position.x + 0.6f && touchPos.y > ObjUse.instance.sk3.position.y - 0.6f && touchPos.y < ObjUse.instance.sk3.position.y + 0.6f)
                         {
-                            Debug.Log("use skill 3!");
-                            if (isChooseSk3)
+                            if (playerImpact.getEnergy() > 30f)
                             {
-                                isSkill = false;
-                                ObjUse.instance._sk3.ResetSK();
-                                ObjUse.instance.scannerFire.SetActive(false);
-                                isChooseSk3 = false;
-                            }
-                            else
-                            {
+                                rightTouch = t.fingerId;
+                                startingSkill = touchPos;
+
                                 isChooseSk3 = true;
-                                useSkill.setSkill3();
+
+                                Vector2 posSk3 = ObjUse.instance.sk3.transform.position;
+
+                                directionSkill = Vector2.ClampMagnitude(touchPos - posSk3, 1f);
+
+                                float angleRadians = Mathf.Atan2(directionSkill.y, directionSkill.x);
+                                float angleDegrees = angleRadians * Mathf.Rad2Deg - 90f;
+
+                                Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, angleDegrees));
+                                direction.transform.rotation = rotation;
+
+
+                                //Debug.Log("use skill 3!");
+                                //if (isChooseSk3)
+                                //{
+                                //    isSkill = false;
+                                //    ObjUse.instance._sk3.ResetSK();
+                                //    ObjUse.instance.scannerFire.SetActive(false);
+                                //    isChooseSk3 = false;
+                                //}
+                                //else
+                                //{
+                                //    isChooseSk3 = true;
+                                //    useSkill.setSkill3();
+                                //}
                             }
                         }
-                        else if (!fourSkill && touchPos.x > ObjUse.instance.sk4.position.x - 0.6f && touchPos.x < ObjUse.instance.sk4.position.x + 0.6f && touchPos.y > ObjUse.instance.sk4.position.y - 0.6f && touchPos.y < ObjUse.instance.sk4.position.y + 0.6f)
+                    else if (!fourSkill && touchPos.x > ObjUse.instance.sk4.position.x - 0.6f && touchPos.x < ObjUse.instance.sk4.position.x + 0.6f && touchPos.y > ObjUse.instance.sk4.position.y - 0.6f && touchPos.y < ObjUse.instance.sk4.position.y + 0.6f)
+                    {
+                        Debug.Log("use skill 4!");
+                        if (isChooseSk4)
                         {
-                            Debug.Log("use skill 4!");
-                            if (isChooseSk4)
-                            {
-                                isSkill = false;
-                                ObjUse.instance._sk4.ResetSK();
-                                ObjUse.instance.scannerFires.SetActive(false);
-                                isChooseSk4 = false;
-                            }
-                            else
-                            {
-                                isChooseSk4 = true;
-                                useSkill.setSkill4();
-                            }
+                            isSkill = false;
+                            ObjUse.instance._sk4.ResetSK();
+                            ObjUse.instance.scannerFires.SetActive(false);
+                            isChooseSk4 = false;
                         }
-                        else if (isChooseSk2 || isChooseSk3 || isChooseSk4)
-                            useSkill.getSkill();
+                        else
+                        {
+                            isChooseSk4 = true;
+                            useSkill.setSkill4();
+                        }
+                    }
+                    else if (isChooseSk2 || isChooseSk3 || isChooseSk4)
+                        useSkill.getSkill();
                     }
                     else
                     {
@@ -188,8 +234,80 @@ public class PlayerMove : MonoBehaviour
                     ObjUse.instance.sta.transform.position = new Vector3(ObjUse.instance.bgSta.transform.position.x + direction.x, ObjUse.instance.bgSta.transform.position.y + direction.y, ObjUse.instance.sta.transform.position.z);
 
                 }
+                else if (isChooseSk2 && t.phase == TouchPhase.Moved && rightTouch == t.fingerId)
+                {
+
+                    Vector2 posSk2 = ObjUse.instance.sk2.transform.position;
+                    Vector2 direc = touchPos - posSk2;
+                    float _length = direc.magnitude;
+                    if (_length > 0.1f)
+                    {
+
+                        if (!direction.activeSelf)
+                        {
+                            direction.SetActive(true);
+                        }
+                        isChooseSk2 = true;
+                        Debug.Log("moveSkill");
+
+
+                        //directionSkill = Vector2.ClampMagnitude(direc, 1f);
+                        directionSkill = direc / _length;
+                        
+
+                        float angleRadians = Mathf.Atan2(directionSkill.y, directionSkill.x);
+                        float angleDegrees = angleRadians * Mathf.Rad2Deg - 90f;
+
+
+                        Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, angleDegrees));
+                        direction.transform.rotation = rotation;
+                    }
+
+                }
+                else if (isChooseSk3 && t.phase == TouchPhase.Moved && rightTouch == t.fingerId)
+                {
+                    Vector2 posSk3 = ObjUse.instance.sk3.transform.position;
+                    Vector2 direc = touchPos - posSk3;
+                    float _length = direc.magnitude;
+                    if (_length > 0.1f)
+                    {
+                        if (!direction.activeSelf)
+                        {
+                            direction.SetActive(true);
+                        }
+                        isChooseSk3 = true;
+                        Debug.Log("moveSkill");
+
+                        //directionSkill = Vector2.ClampMagnitude(direc, 1f);
+                        directionSkill = direc / _length;
+
+                        float angleRadians = Mathf.Atan2(directionSkill.y, directionSkill.x);
+                        float angleDegrees = angleRadians * Mathf.Rad2Deg - 90f;
+
+                        Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, angleDegrees));
+                        direction.transform.rotation = rotation;
+                    }
+
+
+
+
+                }
                 else if (t.phase == TouchPhase.Ended && rightTouch == t.fingerId)
                 {
+                    if (direction.activeSelf)
+                    {
+                        if (isChooseSk2)
+                        {
+                            isChooseSk2 = false;
+                            useSkill.getSkillLight(directionSkill);
+                        }
+                        else if (isChooseSk3)
+                        {
+                            isChooseSk3 = false;
+                            useSkill.getSkillThunderbird(directionSkill);
+                        }
+                        direction.SetActive(false);
+                    }
                     rightTouch = 99;
                 }
                 else if (t.phase == TouchPhase.Ended && leftTouch == t.fingerId)
@@ -201,7 +319,7 @@ public class PlayerMove : MonoBehaviour
                     velocity_ = new Vector2(0, 0);
                     rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
                 }
-                rb.velocity = velocity_ * speed;
+                rb.velocity = velocity_ * speed * (100 + playerImpact.getPercentSpeed()) / 100;
                 //if (isTouch)
                 //{
                 //    rb.velocity = new Vector2(rb.velocity.x, 6.5f);
@@ -361,6 +479,12 @@ public class PlayerMove : MonoBehaviour
     void resetColor()
     {
         sprite.color = new Color(1f, 1f, 1f, 1f);
+    }
+    // hàm giết quái tăng vàng
+    public void getTotalByEnemy(int _gold)
+    {
+        playerImpact.valueGold(_gold);
+        LoadDataPlayer.instance.GetKillEnemy(_gold);
     }
     [PunRPC]
     void ReceiveMessage(string message, Player sender)

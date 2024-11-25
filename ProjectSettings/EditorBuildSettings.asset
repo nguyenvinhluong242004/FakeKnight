@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/FakeKnightProject/Scenes/Play.unity
     guid: f35d9d2e514a9d74cbba8b4b0dab53cf
+  - enabled: 0
+    path: Assets/ServerGame/Scenes/Master.unity
+    guid: 883c05709dc8f1743ba040ace5bce782
   m_configObjects: {}

@@ -5,9 +5,13 @@ using Photon.Pun;
 
 public class EnemyLevel1 : MonoBehaviour
 {
+    [SerializeField] public int id;
+    [SerializeField] private int gold;
     [SerializeField] private PhotonView photonView;
     [SerializeField] public float blood;
+    [SerializeField] public float bloodDefault;
     [SerializeField] private bool isEfect;
+    [SerializeField] private bool isEfectSkillBem;
     [SerializeField] private bool isDie;
     [SerializeField] private bool isRandom;
     [SerializeField] private bool isSkill;
@@ -18,20 +22,28 @@ public class EnemyLevel1 : MonoBehaviour
     [SerializeField] private GameObject bl;
     [SerializeField] private GameObject cut;
     public string Cut = "Cut";
+    public string ValueDamage = "ValueDamage";
     [SerializeField] private SpriteRenderer spr;
     [SerializeField] private Rigidbody2D rb;
     public PlayerMove player;
     [SerializeField] private Animator anm;
+    bool _tagThunderbird = false;
+    bool _tagLight = false;
     // Start is called before the first frame update
     void Start()
     {
+        bloodDefault = blood;
         isEfect = false;
+        isEfectSkillBem = false;
         isDie = false;
         isRandom = false;
         isSkill = false;
         isChangeConstrains = false;
         isChoose = false;
+        _tagThunderbird = false;
+        _tagLight = false;
     }
+    
 
     // Update is called once per frame
     void Update()
@@ -65,7 +77,7 @@ public class EnemyLevel1 : MonoBehaviour
                             cut = PhotonNetwork.Instantiate(this.Cut, transform.position + new Vector3(0.4f, 0, 0), Quaternion.Euler(0, 0, 180f));
                         isSkill = true;
                         player.hitEnemyAttack();
-                        player.playerImpact.setBlood(7f);
+                        player.playerImpact.changeBlood(7f, false);
                         Invoke("resetSkill", 1f);
                     }
                     if (player.isSkill)
@@ -81,7 +93,7 @@ public class EnemyLevel1 : MonoBehaviour
                                         Debug.Log("hitU");
                                         hitPlayerAttack();
                                         player.oneSkill = false;
-                                        photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
+                                        isEfectSkillBem = true;
                                         isChoose = true;
                                     }
                                 }
@@ -94,8 +106,7 @@ public class EnemyLevel1 : MonoBehaviour
                                     {
                                         Debug.Log("hitD");
                                         hitPlayerAttack();
-                                        player.oneSkill = false;
-                                        photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
+                                        player.oneSkill = false; isEfectSkillBem = true;
                                         isChoose = true;
                                     }
                                 }
@@ -107,7 +118,7 @@ public class EnemyLevel1 : MonoBehaviour
                                     Debug.Log("hitL");
                                     hitPlayerAttack();
                                     player.oneSkill = false;
-                                    photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
+                                    isEfectSkillBem = true;
                                     isChoose = true;
                                 }
                             }
@@ -118,7 +129,7 @@ public class EnemyLevel1 : MonoBehaviour
                                     Debug.Log("hitR");
                                     hitPlayerAttack();
                                     player.oneSkill = false;
-                                    photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
+                                    isEfectSkillBem = true;
                                     isChoose = true;
 
                                 }
@@ -175,7 +186,7 @@ public class EnemyLevel1 : MonoBehaviour
                         else
                             photonView.RPC("SyncFlipX", RpcTarget.AllBuffered, false);
                         // Di chuyển quái vật theo vectơ hướng với tốc độ đã đặt
-                        transform.position = Vector2.MoveTowards(currentPos, currentPos + direction, 1.4f * Time.deltaTime);
+                        transform.position = Vector2.MoveTowards(currentPos, currentPos + direction, 1.8f * Time.deltaTime);
                         photonView.RPC("PlayAnimation", RpcTarget.All, "run");
                     }
                 }
@@ -214,7 +225,7 @@ public class EnemyLevel1 : MonoBehaviour
                 Debug.Log("trung chieu 3");
                 isChoose = true;
                 player.threeSkill = false;
-                photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 20f);
+                photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, player.playerImpact.getDamageSkill4());
             }
 
         }
@@ -261,26 +272,147 @@ public class EnemyLevel1 : MonoBehaviour
     }
     void destroy()
     {
+        rb.velocity = Vector2.zero;
         gameObject.SetActive(false);
-        PhotonNetwork.Destroy(gameObject);
+
+        photonView.RPC("reStart", RpcTarget.All);
+        EnemyManager.instance.addPooled(gameObject);
+        //PhotonNetwork.Destroy(gameObject);
     }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
-        {
+    private void OnTriggerEnter2D(Collider2D collision) // bug chỗ player của attach trong các xử lí
+    {                                                   // chỉ 1 phía tác động được gọi -> nếu all đều gọi thì player 
+        if (collision.gameObject.CompareTag("Player"))  // khác nhau => lượng máu khác nhau => sai 
+        {                                               // Status: Chưa fix
             isEfect = true;
             player = collision.gameObject.GetComponent<PlayerMove>();
+        }
+
+        //test
+        if (collision.gameObject.CompareTag("Bem"))
+        {
+            Debug.Log("effect bemmmmmmmmmmmmmmmmmmmmmm");
+        }
+        if (isEfectSkillBem && collision.gameObject.CompareTag("Bem"))
+        {
+            Bem bem = collision.gameObject.GetComponent<Bem>();
+            isEfectSkillBem = false;
+            bem.offBoxEffect();
+            Debug.Log("bemmmmmmmmmmmmmmmmmmmmmm");
+            if (bem != null)
+            {
+                attackBasis(bem.player);
+            }
+            else
+            {
+                Debug.LogWarning("Bem component not found on collided object.");
+            }
         }
         if (collision.gameObject.CompareTag("arrow"))
         {
             photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, 3f);
+
             isChoose = true;
         }
+        if (!_tagLight && collision.gameObject.CompareTag("Light"))
+        {
+            SkillLight skillLight = collision.gameObject.GetComponent<SkillLight>();
+            _tagLight = true;
+
+            if (skillLight != null)
+            {
+                StartCoroutine(InvokeWithDelayLight(0.4f, skillLight.player));
+            }
+            else
+            {
+                Debug.LogWarning("Light component not found on collided object.");
+            }
+        }
+        if (!_tagThunderbird && collision.gameObject.CompareTag("Thunderbird"))
+        {
+            SkillThunderbird skillThunderbird = collision.gameObject.GetComponent<SkillThunderbird>();
+            _tagThunderbird = true;
+
+            if (skillThunderbird != null)
+            {
+                StartCoroutine(InvokeWithDelayThunderBird(0.4f, skillThunderbird.player));
+            }
+            else
+            {
+                Debug.LogWarning("SkillThunderbird component not found on collided object.");
+            }
+        }
+
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        isEfect = false;
-        Invoke("CloseBlood", 1.2f);
+        if (collision.gameObject.CompareTag("Player"))
+        {
+
+            isEfect = false;
+            Invoke("CloseBlood", 1.2f);
+        }
+    }
+    void GenerateValueDamage(float value)
+    {
+        GameObject _value = PhotonNetwork.Instantiate(this.ValueDamage, new Vector3(Random.Range(transform.position.x - 0.4f, transform.position.x + 0.4f), Random.Range(transform.position.y - 0.1f, transform.position.y + 0.2f), 100f), Quaternion.identity);
+        _value.GetComponent<ValueDamage>().value.color = new Color(1f, 0f, 0f, 1f);
+        _value.GetComponent<ValueDamage>().value.text = "- " + ((int)value).ToString();
+    }
+    void attackBasis(PlayerMove player)
+    {
+
+        float value = player.playerImpact.getDamageSkill1() * (100 + player.playerImpact.getPercentDamage()) / 100;
+        if (blood - value <= 0f)
+        {
+            player.getTotalByEnemy(gold);
+        }
+        photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, value);
+        GenerateValueDamage(value);
+
+        //_tagLight = false;
+        //float value = 5f * (100 + player.playerImpact.getPercentDamage()) / 100;
+        //photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, value);
+
+        //bl.SetActive(true);
+        //Invoke("CloseBlood", 0.8f);
+    }
+    IEnumerator InvokeWithDelayLight(float delay, PlayerMove player)
+    {
+        yield return new WaitForSeconds(delay);
+        attackLight(player);
+    }
+    void attackLight(PlayerMove player)
+    {
+        _tagLight = false;
+        float value = player.playerImpact.getDamageSkill2() * (100 + player.playerImpact.getPercentDamage()) / 100;
+        if (blood - value <= 0f)
+        {
+            player.getTotalByEnemy(gold);
+        }
+        photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, value);
+        GenerateValueDamage(value);
+
+        bl.SetActive(true);
+        Invoke("CloseBlood", 0.8f);
+    }
+    IEnumerator InvokeWithDelayThunderBird(float delay, PlayerMove player)
+    {
+        yield return new WaitForSeconds(delay);
+        attackThunderbird(player);
+    }
+    void attackThunderbird(PlayerMove player)
+    {
+        _tagThunderbird = false;
+        float value = player.playerImpact.getDamageSkill3() * (100 + player.playerImpact.getPercentDamage()) / 100;
+        if (blood - value <= 0f)
+        {
+            player.getTotalByEnemy(gold);
+        }
+        photonView.RPC("UpdateBloodRPC", RpcTarget.AllBuffered, value);
+        GenerateValueDamage(value);
+
+        bl.SetActive(true);
+        Invoke("CloseBlood", 0.8f);
     }
     void CloseBlood()
     {
@@ -327,6 +459,26 @@ public class EnemyLevel1 : MonoBehaviour
     void UpdateBloodRPC(float k)
     {
         blood -= k;
+        blood_.setBlood(blood);
+    }
+    [PunRPC]
+    void reStart()
+    {
+        blood = bloodDefault;
+        isEfect = false;
+        isEfectSkillBem = false;
+        isDie = false;
+        isRandom = false;
+        isSkill = false;
+        isChangeConstrains = false;
+        isChoose = false;
+        _tagThunderbird = false;
+        _tagLight = false;
+        photonView.RPC("PlayAnimation", RpcTarget.All, "idle");
+        rb.velocity = Vector2.zero;
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        player = null;
+        bl.SetActive(false);
         blood_.setBlood(blood);
     }
 }

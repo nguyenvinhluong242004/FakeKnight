@@ -228,7 +228,7 @@
       "url": "https://packages.unity.com"
     },
     "jillejr.newtonsoft.json-for-unity": {
-      "version": "https://github.com/applejag/Newtonsoft.Json-for-Unity.git#upm",
+      "version": "https://github.com/jilleJr/Newtonsoft.Json-for-Unity.git#upm",
       "depth": 0,
       "source": "git",
       "dependencies": {},

@@ -5,24 +5,10 @@ using UnityEngine.UI;
 
 public class Button : MonoBehaviour
 {
-    public void getChallence()
-    {
-        if (!ObjectManager.instance.lobby.activeSelf)
-        {
-            ObjectManager.instance.lobby.SetActive(true);
-            ObjectManager.instance.buttonCloselobby.SetActive(true);
-        }
-        else
-        {
-            ObjectManager.instance.lobby.SetActive(false);
-        }
-    }
-    public void CloseChallence()
+    public void getLeaveGame()
     {
         if (ObjectManager.instance.scenePlay.activeSelf)
-        {
-            ObjectManager.instance.lobby.SetActive(false);
-        }
+            ObjectManager.instance.leaveGame.SetActive(!ObjectManager.instance.leaveGame.activeSelf);
     }
     public void closeFriendPrivateChat()
     {
@@ -161,7 +147,7 @@ public class Button : MonoBehaviour
                 ObjectManager.instance.shopAuxiliary.SetActive(!ObjectManager.instance.shopAuxiliary.activeSelf);
                 ObjectManager.instance.pastShop = ObjectManager.instance.shopAuxiliary;
             }
-            else if (gameObject.name == "Upgrate")
+            else if (gameObject.name == "Upgrade")
             {
                 ObjectManager.instance.pastShop.SetActive(!ObjectManager.instance.pastShop.activeSelf);
                 ObjectManager.instance.shopUpgrate.SetActive(!ObjectManager.instance.shopUpgrate.activeSelf);
@@ -196,10 +182,19 @@ public class Button : MonoBehaviour
             ObjectManager.instance.equip.GetComponent<BagItem>().isUse = false;
             ObjectManager.instance.equip.GetComponent<BagItem>().add.SetActive(true);
             LoadDataPlayer.instance.dataPlayer.equipments[ObjectManager.instance.equip.GetComponent<BagItem>().idx] = -1;
+
+            Debug.Log(ObjectManager.instance.bagItem.shop + " bb " + ObjectManager.instance.bagItem.key);
+            float _damage = InformationItem.instance.data[ObjectManager.instance.bagItem.shop, ObjectManager.instance.bagItem.key].damage;
+            float _resist = InformationItem.instance.data[ObjectManager.instance.bagItem.shop, ObjectManager.instance.bagItem.key].resist;
+            float _speed = InformationItem.instance.data[ObjectManager.instance.bagItem.shop, ObjectManager.instance.bagItem.key].speed;
+            ObjUse.instance.changePercent(_damage, _resist, _speed, "sub");
+
             ObjectManager.instance.equip.GetComponent<BagItem>().bagContent.initBagItem(ObjectManager.instance.bagItem.shop, ObjectManager.instance.bagItem.key, 1, ObjectManager.instance.bagItem.type, ObjectManager.instance.bagItem.img.sprite);
             ObjectManager.instance.equip.GetComponent<BagItem>().bagItem = null;
             ObjectManager.instance.equip.GetComponent<BagItem>().img = null;
             ObjectManager.instance.equip.GetComponent<BagItem>().key = 0;
+
+
             ObjectManager.instance.bagItem = null;
             ObjectManager.instance.equip = null;
             ObjectManager.instance.removeEquip.SetActive(false);

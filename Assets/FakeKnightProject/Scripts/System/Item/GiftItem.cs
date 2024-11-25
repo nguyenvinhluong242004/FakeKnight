@@ -36,7 +36,7 @@ public class GiftItem : MonoBehaviour
             int val = int.Parse(value.text);
             if (type == 0)
                 LoadDataPlayer.instance.dataPlayer.gold += val;
-            LoadDataPlayer.instance.moneyPlayer.setValue();
+            LoadDataPlayer.instance.SetValue();
             LoadDataPlayer.instance.SaveDataGamePlayer();
         }    
     }    
